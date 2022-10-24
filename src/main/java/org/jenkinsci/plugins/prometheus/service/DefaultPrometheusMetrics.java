@@ -3,10 +3,7 @@ package org.jenkinsci.plugins.prometheus.service;
 import hudson.ExtensionList;
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.dropwizard.DropwizardExports;
 import io.prometheus.client.exporter.common.TextFormat;
-import io.prometheus.client.hotspot.DefaultExports;
-import jenkins.metrics.api.Metrics;
 import org.jenkinsci.plugins.prometheus.DiskUsageCollector;
 import org.jenkinsci.plugins.prometheus.ExecutorCollector;
 import org.jenkinsci.plugins.prometheus.JenkinsStatusCollector;
@@ -30,14 +27,14 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
         CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
         collectorRegistry.register(new JobCollector());
         collectorRegistry.register(new JenkinsStatusCollector());
-        collectorRegistry.register(new DropwizardExports(Metrics.metricRegistry()));
+        //collectorRegistry.register(new DropwizardExports(Metrics.metricRegistry()));
         collectorRegistry.register(new DiskUsageCollector());
         collectorRegistry.register(new ExecutorCollector());
 
         // other collectors from other plugins
         ExtensionList.lookup(Collector.class).forEach( c -> collectorRegistry.register(c));
 
-        DefaultExports.initialize();
+        //DefaultExports.initialize();
 
         this.collectorRegistry = collectorRegistry;
         this.cachedMetrics = new AtomicReference<>("");
