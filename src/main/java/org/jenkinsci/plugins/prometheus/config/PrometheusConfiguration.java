@@ -58,6 +58,8 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private String labeledBuildParameterNames = "";
 
     private boolean collectDiskUsage = true;
+
+    private boolean collectCodeCoverage = false;
     private boolean collectNodeStatus = true;
 
 
@@ -284,6 +286,17 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return parseParameterNamesFromStringSeparatedByComma(labeledBuildParameterNames);
     }
 
+    public boolean isCollectCodeCoverage() {
+        return collectCodeCoverage;
+    }
+
+    public boolean isCodeCoverageApiPluginInstalled() {
+        return Jenkins.get().getPlugin("code-coverage-api") != null;
+    }
+
+    public void setCollectCodeCoverage(boolean collectCodeCoverage) {
+        this.collectCodeCoverage = collectCodeCoverage;
+    }
 
     public FormValidation doCheckPath(@QueryParameter String value) {
         if (StringUtils.isEmpty(value)) {
