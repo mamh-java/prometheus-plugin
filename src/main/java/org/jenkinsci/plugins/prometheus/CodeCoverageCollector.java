@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus;
 
+import hudson.model.Api;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.plugins.coverage.model.Coverage;
@@ -71,9 +72,9 @@ public class CodeCoverageCollector extends BaseCollector {
         addGauge(samples, "instruction_total", instructionCoverage.getTotal(), new String[]{"code_coverage"}, "Returns the number of instructions total");
 
         Coverage fileCoverage = coverageBuildAction.getCoverage(CoverageMetric.FILE);
-        addGauge(samples, "file_covered", instructionCoverage.getCovered(), new String[]{"code_coverage"}, "Returns the number of files covered");
-        addGauge(samples, "file_missed", instructionCoverage.getMissed(), new String[]{"code_coverage"}, "Returns the number of files missed");
-        addGauge(samples, "file_total", instructionCoverage.getTotal(), new String[]{"code_coverage"}, "Returns the number of files total");
+        addGauge(samples, "file_covered", fileCoverage.getCovered(), new String[]{"code_coverage"}, "Returns the number of files covered");
+        addGauge(samples, "file_missed", fileCoverage.getMissed(), new String[]{"code_coverage"}, "Returns the number of files missed");
+        addGauge(samples, "file_total", fileCoverage.getTotal(), new String[]{"code_coverage"}, "Returns the number of files total");
 
         return samples;
     }
