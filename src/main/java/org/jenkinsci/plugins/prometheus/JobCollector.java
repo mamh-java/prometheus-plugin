@@ -7,7 +7,6 @@ import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.test.AbstractTestResultAction;
 import io.prometheus.client.Collector;
-import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +33,7 @@ public class JobCollector extends Collector {
     private static final String UNDEFINED = "UNDEFINED";
 
     private BuildDurationSummary summary;
-    private Counter jobSuccessCount;
+    private SuccessfulJobCounter jobSuccessCount;
     private FailedJobCounter jobFailedCount;
     private HealthScoreGauge jobHealthScoreGauge;
     private NbBuildsGauge nbBuildsGauge;
@@ -171,12 +170,7 @@ public class JobCollector extends Collector {
         // of "parameters" or "status"
         summary = new BuildDurationSummary(labelNameArray, namespace, subsystem);
 
-        jobSuccessCount = Counter.build()
-                .name(fullname + "_success_build_count")
-                .subsystem(subsystem).namespace(namespace)
-                .labelNames(labelNameArray)
-                .help("Successful build count")
-                .create();
+        jobSuccessCount = new SuccessfulJobCounter(labelNameArray, namespace, subsystem);
 
         jobFailedCount = new FailedJobCounter(labelNameArray, namespace, subsystem);
 
@@ -315,13 +309,9 @@ public class JobCollector extends Collector {
                 }
 
                 summary.calculateMetric(run, labelValueArray);
-
                 jobFailedCount.calculateMetric(run, labelValueArray);
-                if (runResult != null && !run.isBuilding()) {
-                    if (runResult.ordinal == 0 || runResult.ordinal == 1) {
-                        jobSuccessCount.labels(labelValueArray).inc();
-                    }
-                }
+                jobSuccessCount.calculateMetric(run, labelValueArray);
+
                 if (isPerBuildMetrics) {
                     labelValueArray = Arrays.copyOf(labelValueArray, labelValueArray.length + 1);
                     labelValueArray[labelValueArray.length - 1] = String.valueOf(run.getNumber());
