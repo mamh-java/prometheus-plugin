@@ -12,7 +12,6 @@ import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.metrics.builds.JobBuildResultOrdinalGauge;
-import org.jenkinsci.plugins.prometheus.metrics.builds.LastJobBuildResultOrdinalGauge;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.*;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
@@ -60,7 +59,7 @@ public class JobCollector extends Collector {
         }
 
         public void initCollectors(String fullname, String subsystem, String namespace, String[] labelNameArray, String[] labelStageNameArray) {
-            this.jobBuildResultOrdinal = buildPrefix.equals("") ? new JobBuildResultOrdinalGauge(labelNameArray, namespace, subsystem) : new LastJobBuildResultOrdinalGauge(labelNameArray, namespace, subsystem);
+            this.jobBuildResultOrdinal = new JobBuildResultOrdinalGauge(labelNameArray, namespace, subsystem, buildPrefix);
 
 
             this.jobBuildResult = Gauge.build()

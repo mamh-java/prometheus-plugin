@@ -17,7 +17,7 @@ public class JobBuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
 
         Mockito.when(mock.getResult()).thenReturn(null);
 
-        JobBuildResultOrdinalGauge sut = new JobBuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem());
+        JobBuildResultOrdinalGauge sut = new JobBuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.initCollector();
 
@@ -34,7 +34,7 @@ public class JobBuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
 
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        JobBuildResultOrdinalGauge sut = new JobBuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem());
+        JobBuildResultOrdinalGauge sut = new JobBuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.initCollector();
 
@@ -47,6 +47,28 @@ public class JobBuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
 
 
         Assertions.assertEquals("default_jenkins_builds_build_result_ordinal", collect.get(0).samples.get(0).name);
+        Assertions.assertEquals(0.0, collect.get(0).samples.get(0).value);
+
+    }
+
+    @Test
+    public void testPrefixedOrdinalCalculated() {
+
+        Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
+
+        JobBuildResultOrdinalGauge sut = new JobBuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "last");
+
+        sut.initCollector();
+
+        sut.calculateMetric(mock, getLabelValues());
+
+        List<Collector.MetricFamilySamples> collect = sut.collect();
+
+        Assertions.assertEquals(1, collect.size());
+        Assertions.assertEquals(1, collect.get(0).samples.size(), "Would expect one result");
+
+
+        Assertions.assertEquals("default_jenkins_builds_last_build_result_ordinal", collect.get(0).samples.get(0).name);
         Assertions.assertEquals(0.0, collect.get(0).samples.get(0).value);
 
     }

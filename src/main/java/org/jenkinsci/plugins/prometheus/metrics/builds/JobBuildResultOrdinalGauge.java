@@ -6,8 +6,8 @@ import org.jenkinsci.plugins.prometheus.metrics.BaseMetricCollector;
 
 public class JobBuildResultOrdinalGauge extends BaseMetricCollector<Run, Gauge> {
 
-    public JobBuildResultOrdinalGauge(String[] labelNames, String namespace, String subsystem) {
-        super(labelNames, namespace, subsystem);
+    public JobBuildResultOrdinalGauge(String[] labelNames, String namespace, String subsystem, String namePrefix) {
+        super(labelNames, namespace, subsystem, namePrefix);
     }
 
     @Override
