@@ -11,6 +11,8 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
+import org.jenkinsci.plugins.prometheus.metrics.builds.JobBuildResultOrdinalGauge;
+import org.jenkinsci.plugins.prometheus.metrics.builds.LastJobBuildResultOrdinalGauge;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.*;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
@@ -42,7 +44,7 @@ public class JobCollector extends Collector {
 
     private static class BuildMetrics {
 
-        public Gauge jobBuildResultOrdinal;
+        public JobBuildResultOrdinalGauge jobBuildResultOrdinal;
         public Gauge jobBuildResult;
         public Gauge jobBuildStartMillis;
         public Gauge jobBuildDuration;
@@ -58,12 +60,8 @@ public class JobCollector extends Collector {
         }
 
         public void initCollectors(String fullname, String subsystem, String namespace, String[] labelNameArray, String[] labelStageNameArray) {
-            this.jobBuildResultOrdinal = Gauge.build()
-                    .name(fullname + this.buildPrefix + "_build_result_ordinal")
-                    .subsystem(subsystem).namespace(namespace)
-                    .labelNames(labelNameArray)
-                    .help("Build status of a job.")
-                    .create();
+            this.jobBuildResultOrdinal = buildPrefix.equals("") ? new JobBuildResultOrdinalGauge(labelNameArray, namespace, subsystem) : new LastJobBuildResultOrdinalGauge(labelNameArray, namespace, subsystem);
+
 
             this.jobBuildResult = Gauge.build()
                     .name(fullname + this.buildPrefix + "_build_result")
@@ -344,7 +342,7 @@ public class JobCollector extends Collector {
          * NOT_BUILT 3 false - The module was not built.
          * ABORTED   4 false - The build was manually aborted.
          */
-        buildMetrics.jobBuildResultOrdinal.labels(buildLabelValueArray).set(ordinal);
+        buildMetrics.jobBuildResultOrdinal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildResult.labels(buildLabelValueArray).set(ordinal < 2 ? 1 : 0);
 
         logger.debug("Processing run [{}] from job [{}]", run.getNumber(), job.getName());
