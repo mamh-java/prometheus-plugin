@@ -3,8 +3,9 @@ package org.jenkinsci.plugins.prometheus.metrics.jobs;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
+import org.jenkinsci.plugins.prometheus.metrics.BaseMetricCollector;
 
-public class FailedJobCounter extends BaseJobMetricCollector<Run, Counter> {
+public class FailedJobCounter extends BaseMetricCollector<Run, Counter> {
 
     public FailedJobCounter(String[] labelNames, String namespace, String subSystem) {
         super(labelNames, namespace, subSystem);

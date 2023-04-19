@@ -27,4 +27,13 @@ public abstract class BaseMetricCollector<T, I extends Collector> implements Met
     public List<Collector.MetricFamilySamples> collect() {
         return collector.collect();
     }
+
+    protected String calculateName(String name) {
+        return getBaseName() + SEPARATOR + name;
+    }
+
+    private String getBaseName() {
+        return "builds";
+    }
+
 }
