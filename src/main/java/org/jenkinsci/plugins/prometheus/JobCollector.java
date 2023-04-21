@@ -49,7 +49,7 @@ public class JobCollector extends Collector {
         public BuildResultOrdinalGauge jobBuildResultOrdinal;
         public BuildResultGauge jobBuildResult;
         public BuildStartGauge jobBuildStartMillis;
-        public Gauge jobBuildDuration;
+        public BuildDurationGauge jobBuildDuration;
         public Summary stageSummary;
         public Gauge jobBuildTestsTotal;
         public Gauge jobBuildTestsSkipped;
@@ -64,14 +64,7 @@ public class JobCollector extends Collector {
         public void initCollectors(String fullname, String subsystem, String namespace, String[] labelNameArray, String[] labelStageNameArray) {
             this.jobBuildResultOrdinal = new BuildResultOrdinalGauge(labelNameArray, namespace, subsystem, buildPrefix);
             this.jobBuildResult = new BuildResultGauge(labelNameArray, namespace, subsystem, buildPrefix);
-
-            this.jobBuildDuration = Gauge.build()
-                    .name(fullname + this.buildPrefix + "_build_duration_milliseconds")
-                    .subsystem(subsystem).namespace(namespace)
-                    .labelNames(labelNameArray)
-                    .help("Build times in milliseconds of last build")
-                    .create();
-
+            this.jobBuildDuration = new BuildDurationGauge(labelNameArray, namespace, subsystem, buildPrefix);
             this.jobBuildStartMillis = new BuildStartGauge(labelNameArray, namespace, subsystem, buildPrefix);
 
             this.jobBuildTestsTotal = Gauge.build()
@@ -312,19 +305,14 @@ public class JobCollector extends Collector {
     }
 
     private void processRun(Job job, Run run, String[] buildLabelValueArray, BuildMetrics buildMetrics) {
-        long duration;
-        duration = run.getDuration();
-
+        logger.debug("Processing run [{}] from job [{}]", run.getNumber(), job.getName());
         buildMetrics.jobBuildResultOrdinal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildResult.calculateMetric(run, buildLabelValueArray);
-
-        logger.debug("Processing run [{}] from job [{}]", run.getNumber(), job.getName());
-
         buildMetrics.jobBuildStartMillis.calculateMetric(run, buildLabelValueArray);
-
+        buildMetrics.jobBuildDuration.calculateMetric(run, buildLabelValueArray);
 
         if (!run.isBuilding()) {
-            buildMetrics.jobBuildDuration.labels(buildLabelValueArray).set(duration);
+
             processRunTestsResults(run, buildLabelValueArray, buildMetrics);
 
             if (run instanceof WorkflowRun) {
