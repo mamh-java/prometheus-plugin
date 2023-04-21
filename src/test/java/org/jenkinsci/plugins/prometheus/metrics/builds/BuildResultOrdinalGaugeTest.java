@@ -19,8 +19,6 @@ public class BuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
 
         BuildResultOrdinalGauge sut = new BuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 
-        sut.initCollector();
-
         sut.calculateMetric(mock, getLabelValues());
 
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -35,8 +33,6 @@ public class BuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
         BuildResultOrdinalGauge sut = new BuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
-
-        sut.initCollector();
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -57,8 +53,6 @@ public class BuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
         BuildResultOrdinalGauge sut = new BuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "last");
-
-        sut.initCollector();
 
         sut.calculateMetric(mock, getLabelValues());
 

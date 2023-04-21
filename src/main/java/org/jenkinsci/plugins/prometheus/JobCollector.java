@@ -12,7 +12,10 @@ import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.metrics.builds.*;
-import org.jenkinsci.plugins.prometheus.metrics.jobs.*;
+import org.jenkinsci.plugins.prometheus.metrics.jobs.BuildDiscardGauge;
+import org.jenkinsci.plugins.prometheus.metrics.jobs.CurrentRunDurationGauge;
+import org.jenkinsci.plugins.prometheus.metrics.jobs.HealthScoreGauge;
+import org.jenkinsci.plugins.prometheus.metrics.jobs.NbBuildsGauge;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
@@ -45,7 +48,7 @@ public class JobCollector extends Collector {
 
         public BuildResultOrdinalGauge jobBuildResultOrdinal;
         public BuildResultGauge jobBuildResult;
-        public Gauge jobBuildStartMillis;
+        public BuildStartGauge jobBuildStartMillis;
         public Gauge jobBuildDuration;
         public Summary stageSummary;
         public Gauge jobBuildTestsTotal;
@@ -69,12 +72,7 @@ public class JobCollector extends Collector {
                     .help("Build times in milliseconds of last build")
                     .create();
 
-            this.jobBuildStartMillis = Gauge.build()
-                    .name(fullname + this.buildPrefix + "_build_start_time_milliseconds")
-                    .subsystem(subsystem).namespace(namespace)
-                    .labelNames(labelNameArray)
-                    .help("Last build start timestamp in milliseconds")
-                    .create();
+            this.jobBuildStartMillis = new BuildStartGauge(labelNameArray, namespace, subsystem, buildPrefix);
 
             this.jobBuildTestsTotal = Gauge.build()
                     .name(fullname + this.buildPrefix + "_build_tests_total")
@@ -314,17 +312,15 @@ public class JobCollector extends Collector {
     }
 
     private void processRun(Job job, Run run, String[] buildLabelValueArray, BuildMetrics buildMetrics) {
-        long millis;
         long duration;
         duration = run.getDuration();
-        millis = run.getStartTimeInMillis();
 
         buildMetrics.jobBuildResultOrdinal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildResult.calculateMetric(run, buildLabelValueArray);
 
         logger.debug("Processing run [{}] from job [{}]", run.getNumber(), job.getName());
 
-        buildMetrics.jobBuildStartMillis.labels(buildLabelValueArray).set(millis);
+        buildMetrics.jobBuildStartMillis.calculateMetric(run, buildLabelValueArray);
 
 
         if (!run.isBuilding()) {
