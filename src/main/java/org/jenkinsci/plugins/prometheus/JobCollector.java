@@ -11,8 +11,7 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
-import org.jenkinsci.plugins.prometheus.metrics.builds.JobBuildResultGauge;
-import org.jenkinsci.plugins.prometheus.metrics.builds.JobBuildResultOrdinalGauge;
+import org.jenkinsci.plugins.prometheus.metrics.builds.*;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.*;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
@@ -35,8 +34,8 @@ public class JobCollector extends Collector {
     private static final String UNDEFINED = "UNDEFINED";
 
     private BuildDurationSummary summary;
-    private SuccessfulJobCounter jobSuccessCount;
-    private FailedJobCounter jobFailedCount;
+    private BuildSuccessfulCounter jobSuccessCount;
+    private BuildFailedCounter jobFailedCount;
     private HealthScoreGauge jobHealthScoreGauge;
     private NbBuildsGauge nbBuildsGauge;
     private BuildDiscardGauge buildDiscardGauge;
@@ -44,8 +43,8 @@ public class JobCollector extends Collector {
 
     private static class BuildMetrics {
 
-        public JobBuildResultOrdinalGauge jobBuildResultOrdinal;
-        public JobBuildResultGauge jobBuildResult;
+        public BuildResultOrdinalGauge jobBuildResultOrdinal;
+        public BuildResultGauge jobBuildResult;
         public Gauge jobBuildStartMillis;
         public Gauge jobBuildDuration;
         public Summary stageSummary;
@@ -60,8 +59,8 @@ public class JobCollector extends Collector {
         }
 
         public void initCollectors(String fullname, String subsystem, String namespace, String[] labelNameArray, String[] labelStageNameArray) {
-            this.jobBuildResultOrdinal = new JobBuildResultOrdinalGauge(labelNameArray, namespace, subsystem, buildPrefix);
-            this.jobBuildResult = new JobBuildResultGauge(labelNameArray, namespace, subsystem, buildPrefix);
+            this.jobBuildResultOrdinal = new BuildResultOrdinalGauge(labelNameArray, namespace, subsystem, buildPrefix);
+            this.jobBuildResult = new BuildResultGauge(labelNameArray, namespace, subsystem, buildPrefix);
 
             this.jobBuildDuration = Gauge.build()
                     .name(fullname + this.buildPrefix + "_build_duration_milliseconds")
@@ -161,9 +160,9 @@ public class JobCollector extends Collector {
         // of "parameters" or "status"
         summary = new BuildDurationSummary(labelNameArray, namespace, subsystem);
 
-        jobSuccessCount = new SuccessfulJobCounter(labelNameArray, namespace, subsystem);
+        jobSuccessCount = new BuildSuccessfulCounter(labelNameArray, namespace, subsystem);
 
-        jobFailedCount = new FailedJobCounter(labelNameArray, namespace, subsystem);
+        jobFailedCount = new BuildFailedCounter(labelNameArray, namespace, subsystem);
 
         // This metric uses "base" labels as it is just the health score reported
         // by the job object and the optional labels params and status don't make much

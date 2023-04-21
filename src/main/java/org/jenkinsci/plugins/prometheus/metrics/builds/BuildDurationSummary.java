@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.prometheus.metrics.jobs;
+package org.jenkinsci.plugins.prometheus.metrics.builds;
 
 import hudson.model.Run;
 import io.prometheus.client.Summary;

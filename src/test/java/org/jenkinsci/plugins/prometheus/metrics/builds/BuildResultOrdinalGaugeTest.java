@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-public class JobBuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
+public class BuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
 
 
     @Test
@@ -17,7 +17,7 @@ public class JobBuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
 
         Mockito.when(mock.getResult()).thenReturn(null);
 
-        JobBuildResultOrdinalGauge sut = new JobBuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+        BuildResultOrdinalGauge sut = new BuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.initCollector();
 
@@ -34,7 +34,7 @@ public class JobBuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
 
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        JobBuildResultOrdinalGauge sut = new JobBuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
+        BuildResultOrdinalGauge sut = new BuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 
         sut.initCollector();
 
@@ -56,7 +56,7 @@ public class JobBuildResultOrdinalGaugeTest extends MockedRunCollectorTest {
 
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        JobBuildResultOrdinalGauge sut = new JobBuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "last");
+        BuildResultOrdinalGauge sut = new BuildResultOrdinalGauge(getLabelNames(), getNamespace(), getSubSystem(), "last");
 
         sut.initCollector();
 

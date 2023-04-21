@@ -9,13 +9,13 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-public class JobBuildResultGaugeTest extends MockedRunCollectorTest {
+public class BuildResultGaugeTest extends MockedRunCollectorTest {
 
     @Test
     public void testSuccessResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        JobBuildResultGauge sut = new JobBuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -30,7 +30,7 @@ public class JobBuildResultGaugeTest extends MockedRunCollectorTest {
     public void testSuccessResultWithPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        JobBuildResultGauge sut = new JobBuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "last");
+        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "last");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -45,7 +45,7 @@ public class JobBuildResultGaugeTest extends MockedRunCollectorTest {
     public void testUnstableResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.UNSTABLE);
 
-        JobBuildResultGauge sut = new JobBuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -60,7 +60,7 @@ public class JobBuildResultGaugeTest extends MockedRunCollectorTest {
     public void testFailureResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.FAILURE);
 
-        JobBuildResultGauge sut = new JobBuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -75,7 +75,7 @@ public class JobBuildResultGaugeTest extends MockedRunCollectorTest {
     public void testNotBuiltResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.NOT_BUILT);
 
-        JobBuildResultGauge sut = new JobBuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();
@@ -90,7 +90,7 @@ public class JobBuildResultGaugeTest extends MockedRunCollectorTest {
     public void testAbortedResultWithNoPrefix() {
         Mockito.when(mock.getResult()).thenReturn(Result.ABORTED);
 
-        JobBuildResultGauge sut = new JobBuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
+        BuildResultGauge sut = new BuildResultGauge(getLabelNames(), getNamespace() ,getSubSystem(), "");
 
         sut.calculateMetric(mock, getLabelValues());
         List<Collector.MetricFamilySamples> collect = sut.collect();

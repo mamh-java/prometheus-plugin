@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.prometheus.metrics.jobs;
 
 import hudson.model.Result;
 import io.prometheus.client.Collector;
+import org.jenkinsci.plugins.prometheus.metrics.builds.BuildSuccessfulCounter;
 import org.jenkinsci.plugins.prometheus.metrics.testutils.MockedRunCollectorTest;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +11,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-public class SuccessfulJobCounterTest extends MockedRunCollectorTest {
+public class BuildSuccessfulCounterTest extends MockedRunCollectorTest {
 
     @Test
     public void testNothingIsIncreasedOnUnstableBuild() {
@@ -43,7 +44,7 @@ public class SuccessfulJobCounterTest extends MockedRunCollectorTest {
     }
 
     private void testSingleCalculation() {
-        SuccessfulJobCounter sut = new SuccessfulJobCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
 
@@ -67,7 +68,7 @@ public class SuccessfulJobCounterTest extends MockedRunCollectorTest {
     public void testCounterIsIncreasedOnBuildResultFailure() {
         when(mock.getResult()).thenReturn(Result.SUCCESS);
 
-        SuccessfulJobCounter sut = new SuccessfulJobCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
         sut.calculateMetric(mock, getLabelValues());
@@ -90,7 +91,7 @@ public class SuccessfulJobCounterTest extends MockedRunCollectorTest {
     }
 
     private void testNonSuccessStateBuild() {
-        SuccessfulJobCounter sut = new SuccessfulJobCounter(getLabelNames(), getNamespace(), getSubSystem());
+        BuildSuccessfulCounter sut = new BuildSuccessfulCounter(getLabelNames(), getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, getLabelValues());
 

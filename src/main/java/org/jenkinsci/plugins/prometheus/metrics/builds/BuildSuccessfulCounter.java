@@ -1,13 +1,13 @@
-package org.jenkinsci.plugins.prometheus.metrics.jobs;
+package org.jenkinsci.plugins.prometheus.metrics.builds;
 
 import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
 import org.jenkinsci.plugins.prometheus.metrics.BaseMetricCollector;
 
-public class SuccessfulJobCounter extends BaseMetricCollector<Run, Counter> {
+public class BuildSuccessfulCounter extends BaseMetricCollector<Run, Counter> {
 
-    public SuccessfulJobCounter(String[] labelNames, String namespace, String subSystem) {
+    public BuildSuccessfulCounter(String[] labelNames, String namespace, String subSystem) {
         super(labelNames, namespace, subSystem);
     }
 
