@@ -1,14 +1,11 @@
 package org.jenkinsci.plugins.prometheus;
 
-import com.cloudbees.workflow.rest.external.StageNodeExt;
-import com.cloudbees.workflow.rest.external.StatusExt;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.test.AbstractTestResultAction;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Gauge;
-import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.metrics.builds.*;
@@ -19,7 +16,6 @@ import org.jenkinsci.plugins.prometheus.metrics.jobs.NbBuildsGauge;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.jenkinsci.plugins.prometheus.util.FlowNodes.getSortedStageNodes;
 
 public class JobCollector extends Collector {
 
@@ -50,7 +44,7 @@ public class JobCollector extends Collector {
         public BuildResultGauge jobBuildResult;
         public BuildStartGauge jobBuildStartMillis;
         public BuildDurationGauge jobBuildDuration;
-        public Summary stageSummary;
+        public StageSummary stageSummary;
         public Gauge jobBuildTestsTotal;
         public Gauge jobBuildTestsSkipped;
         public Gauge jobBuildTestsFailing;
@@ -88,12 +82,7 @@ public class JobCollector extends Collector {
                     .help("Number of failing tests during the last build")
                     .create();
 
-            this.stageSummary = Summary.build().name(fullname + this.buildPrefix + "_stage_duration_milliseconds_summary")
-                    .subsystem(subsystem).namespace(namespace)
-                    .labelNames(labelStageNameArray)
-                    .help("Summary of Jenkins build times by Job and Stage in the last build")
-                    .create();
-
+            this.stageSummary = new StageSummary(labelStageNameArray, namespace, subsystem, buildPrefix);
 
         }
     }
@@ -310,18 +299,11 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildResult.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildStartMillis.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildDuration.calculateMetric(run, buildLabelValueArray);
+        // Label values are calculated within stageSummary so we pass null here.
+        buildMetrics.stageSummary.calculateMetric(run, null);
 
         if (!run.isBuilding()) {
-
             processRunTestsResults(run, buildLabelValueArray, buildMetrics);
-
-            if (run instanceof WorkflowRun) {
-                logger.debug("run [{}] from job [{}] is of type workflowRun", run.getNumber(), job.getName());
-                WorkflowRun workflowRun = (WorkflowRun) run;
-                if (workflowRun.getExecution() != null) {
-                    processPipelineRunStages(job, run, workflowRun, buildMetrics.stageSummary);
-                }
-            }
         }
     }
 
@@ -334,37 +316,6 @@ public class JobCollector extends Collector {
             buildMetrics.jobBuildTestsTotal.labels(buildLabelValueArray).set(testsTotal);
             buildMetrics.jobBuildTestsSkipped.labels(buildLabelValueArray).set(testsSkipped);
             buildMetrics.jobBuildTestsFailing.labels(buildLabelValueArray).set(testsFail);
-        }
-    }
-
-    private void processPipelineRunStages(Job job, Run latestfinishedRun, WorkflowRun workflowRun, Summary stageSummary) {
-        logger.debug("Getting the sorted stage nodes for run[{}] from job [{}]", latestfinishedRun.getNumber(), job.getName());
-        List<StageNodeExt> stages = getSortedStageNodes(workflowRun);
-        for (StageNodeExt stage : stages) {
-            if (stage != null && stageSummary != null) {
-                observeStage(job, latestfinishedRun, stage, stageSummary);
-            }
-        }
-    }
-
-    private void observeStage(Job job, Run run, StageNodeExt stage, Summary stageSummary) {
-        logger.debug("Observing stage[{}] in run [{}] from job [{}]", stage.getName(), run.getNumber(), job.getName());
-        // Add this to the repo as well so I can group by Github Repository
-        String repoName = StringUtils.substringBetween(job.getFullName(), "/");
-        if (repoName == null) {
-            repoName = NOT_AVAILABLE;
-        }
-        String jobName = job.getFullName();
-        String stageName = stage.getName();
-        String[] labelValueArray = {jobName, repoName, String.valueOf(job.isBuildable()), stageName};
-
-        if (stage.getStatus() == StatusExt.SUCCESS || stage.getStatus() == StatusExt.UNSTABLE) {
-            logger.debug("getting duration for stage[{}] in run [{}] from job [{}]", stage.getName(), run.getNumber(), job.getName());
-            long duration = stage.getDurationMillis();
-            logger.debug("duration was [{}] for stage[{}] in run [{}] from job [{}]", duration, stage.getName(), run.getNumber(), job.getName());
-            stageSummary.labels(labelValueArray).observe(duration);
-        } else {
-            logger.debug("Stage[{}] in run [{}] from job [{}] was not successful and will be ignored", stage.getName(), run.getNumber(), job.getName());
         }
     }
 
