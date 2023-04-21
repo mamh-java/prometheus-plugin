@@ -8,8 +8,6 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class BuildDurationGaugeTest extends MockedRunCollectorTest {
 
     @Test
@@ -30,7 +28,6 @@ public class BuildDurationGaugeTest extends MockedRunCollectorTest {
     @Test
     public void testCalculateDurationIsNotCalculatedWhenRunIsBuilding() {
         Mockito.when(mock.isBuilding()).thenReturn(true);
-        Mockito.when(mock.getDuration()).thenReturn(1000L);
 
         BuildDurationGauge sut = new BuildDurationGauge(getLabelNames(), getNamespace(), getSubSystem(), "");
 

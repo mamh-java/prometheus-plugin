@@ -49,8 +49,6 @@ public class StageSummaryTest extends MockedRunCollectorTest {
 
     @Test
     public void testNothingCalculatedWhenThereIsNoWorkflowExecution() {
-        Mockito.when(mockedWorkflowRun.getExecution()).thenReturn(null);
-
 
         StageSummary sut = new StageSummary(getLabelNames(), getNamespace(), getSubSystem(), "");
 
