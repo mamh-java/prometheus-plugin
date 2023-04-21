@@ -39,7 +39,7 @@ public abstract class BaseMetricCollector<T, I extends Collector> implements Met
     }
 
     protected String calculateName(String name) {
-        if (namePrefix == null) {
+        if (namePrefix == null || namePrefix.equals("")) {
             return getBaseName() + SEPARATOR + name;
         }
         return getBaseName() + SEPARATOR + namePrefix + SEPARATOR + name;

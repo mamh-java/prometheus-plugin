@@ -11,6 +11,7 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Summary;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
+import org.jenkinsci.plugins.prometheus.metrics.builds.JobBuildResultGauge;
 import org.jenkinsci.plugins.prometheus.metrics.builds.JobBuildResultOrdinalGauge;
 import org.jenkinsci.plugins.prometheus.metrics.jobs.*;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
@@ -44,7 +45,7 @@ public class JobCollector extends Collector {
     private static class BuildMetrics {
 
         public JobBuildResultOrdinalGauge jobBuildResultOrdinal;
-        public Gauge jobBuildResult;
+        public JobBuildResultGauge jobBuildResult;
         public Gauge jobBuildStartMillis;
         public Gauge jobBuildDuration;
         public Summary stageSummary;
@@ -60,14 +61,7 @@ public class JobCollector extends Collector {
 
         public void initCollectors(String fullname, String subsystem, String namespace, String[] labelNameArray, String[] labelStageNameArray) {
             this.jobBuildResultOrdinal = new JobBuildResultOrdinalGauge(labelNameArray, namespace, subsystem, buildPrefix);
-
-
-            this.jobBuildResult = Gauge.build()
-                    .name(fullname + this.buildPrefix + "_build_result")
-                    .subsystem(subsystem).namespace(namespace)
-                    .labelNames(labelNameArray)
-                    .help("Build status of a job as a boolean (0 or 1)")
-                    .create();
+            this.jobBuildResult = new JobBuildResultGauge(labelNameArray, namespace, subsystem, buildPrefix);
 
             this.jobBuildDuration = Gauge.build()
                     .name(fullname + this.buildPrefix + "_build_duration_milliseconds")
@@ -322,27 +316,12 @@ public class JobCollector extends Collector {
 
     private void processRun(Job job, Run run, String[] buildLabelValueArray, BuildMetrics buildMetrics) {
         long millis;
-        Result runResult;
         long duration;
-        int ordinal = -1;
         duration = run.getDuration();
         millis = run.getStartTimeInMillis();
-        runResult = run.getResult();
-        if (null != runResult) {
-            ordinal = runResult.ordinal;
-        }
 
-        /*
-         * _last_build_result _last_build_result_ordinal
-         *
-         * SUCCESS   0 true  - The build had no errors.
-         * UNSTABLE  1 true  - The build had some errors but they were not fatal. For example, some tests failed.
-         * FAILURE   2 false - The build had a fatal error.
-         * NOT_BUILT 3 false - The module was not built.
-         * ABORTED   4 false - The build was manually aborted.
-         */
         buildMetrics.jobBuildResultOrdinal.calculateMetric(run, buildLabelValueArray);
-        buildMetrics.jobBuildResult.labels(buildLabelValueArray).set(ordinal < 2 ? 1 : 0);
+        buildMetrics.jobBuildResult.calculateMetric(run, buildLabelValueArray);
 
         logger.debug("Processing run [{}] from job [{}]", run.getNumber(), job.getName());
 
