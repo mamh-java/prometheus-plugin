@@ -3,9 +3,7 @@ package org.jenkinsci.plugins.prometheus;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
-import hudson.tasks.test.AbstractTestResultAction;
 import io.prometheus.client.Collector;
-import io.prometheus.client.Gauge;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.metrics.builds.*;
@@ -45,45 +43,25 @@ public class JobCollector extends Collector {
         public BuildStartGauge jobBuildStartMillis;
         public BuildDurationGauge jobBuildDuration;
         public StageSummary stageSummary;
-        public Gauge jobBuildTestsTotal;
-        public Gauge jobBuildTestsSkipped;
-        public Gauge jobBuildTestsFailing;
+        public TotalTestsGauge jobBuildTestsTotal;
+        public SkippedTestsGauge jobBuildTestsSkipped;
+        public FailedTestsGauge jobBuildTestsFailing;
 
-        private String buildPrefix;
+        private final String buildPrefix;
 
         public BuildMetrics(String buildPrefix) {
             this.buildPrefix = buildPrefix;
         }
 
-        public void initCollectors(String fullname, String subsystem, String namespace, String[] labelNameArray, String[] labelStageNameArray) {
+        public void initCollectors(String subsystem, String namespace, String[] labelNameArray, String[] labelStageNameArray) {
             this.jobBuildResultOrdinal = new BuildResultOrdinalGauge(labelNameArray, namespace, subsystem, buildPrefix);
             this.jobBuildResult = new BuildResultGauge(labelNameArray, namespace, subsystem, buildPrefix);
             this.jobBuildDuration = new BuildDurationGauge(labelNameArray, namespace, subsystem, buildPrefix);
             this.jobBuildStartMillis = new BuildStartGauge(labelNameArray, namespace, subsystem, buildPrefix);
-
-            this.jobBuildTestsTotal = Gauge.build()
-                    .name(fullname + this.buildPrefix + "_build_tests_total")
-                    .subsystem(subsystem).namespace(namespace)
-                    .labelNames(labelNameArray)
-                    .help("Number of total tests during the last build")
-                    .create();
-
-            this.jobBuildTestsSkipped = Gauge.build()
-                    .name(fullname + "_last_build_tests_skipped")
-                    .subsystem(subsystem).namespace(namespace)
-                    .labelNames(labelNameArray)
-                    .help("Number of skipped tests during the last build")
-                    .create();
-
-            this.jobBuildTestsFailing = Gauge.build()
-                    .name(fullname + this.buildPrefix + "_build_tests_failing")
-                    .subsystem(subsystem).namespace(namespace)
-                    .labelNames(labelNameArray)
-                    .help("Number of failing tests during the last build")
-                    .create();
-
+            this.jobBuildTestsTotal = new TotalTestsGauge(labelNameArray, namespace, subsystem, buildPrefix);
+            this.jobBuildTestsSkipped = new SkippedTestsGauge(labelNameArray, namespace, subsystem, buildPrefix);
+            this.jobBuildTestsFailing = new FailedTestsGauge(labelNameArray, namespace, subsystem, buildPrefix);
             this.stageSummary = new StageSummary(labelStageNameArray, namespace, subsystem, buildPrefix);
-
         }
     }
 
@@ -99,7 +77,6 @@ public class JobCollector extends Collector {
 
         String namespace = ConfigurationUtils.getNamespace();
         List<MetricFamilySamples> samples = new ArrayList<>();
-        String fullname = "builds";
         String subsystem = ConfigurationUtils.getSubSystem();
         String jobAttribute = PrometheusConfiguration.get().getJobAttributeName();
 
@@ -158,11 +135,11 @@ public class JobCollector extends Collector {
         if (PrometheusConfiguration.get().isPerBuildMetrics()) {
             labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
             labelNameArray[labelNameArray.length - 1] = "number";
-            perBuildMetrics.initCollectors(fullname, subsystem, namespace, labelNameArray, labelStageNameArray);
+            perBuildMetrics.initCollectors(subsystem, namespace, labelNameArray, labelStageNameArray);
         }
 
         // The lastBuildMetrics are initialized with the "base" labels
-        lastBuildMetrics.initCollectors(fullname, subsystem, namespace, labelBaseNameArray, labelStageNameArray);
+        lastBuildMetrics.initCollectors(subsystem, namespace, labelBaseNameArray, labelStageNameArray);
 
 
         Jobs.forEachJob(job -> {
@@ -301,25 +278,9 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildDuration.calculateMetric(run, buildLabelValueArray);
         // Label values are calculated within stageSummary so we pass null here.
         buildMetrics.stageSummary.calculateMetric(run, null);
-
-        if (!run.isBuilding()) {
-            processRunTestsResults(run, buildLabelValueArray, buildMetrics);
-        }
+        buildMetrics.jobBuildTestsTotal.calculateMetric(run, buildLabelValueArray);
+        buildMetrics.jobBuildTestsSkipped.calculateMetric(run, buildLabelValueArray);
+        buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
     }
 
-    private void processRunTestsResults(Run run, String[] buildLabelValueArray, BuildMetrics buildMetrics) {
-        if (PrometheusConfiguration.get().isFetchTestResults() && hasTestResults(run) && !run.isBuilding()) {
-            int testsTotal = run.getAction(AbstractTestResultAction.class).getTotalCount();
-            int testsFail = run.getAction(AbstractTestResultAction.class).getFailCount();
-            int testsSkipped = run.getAction(AbstractTestResultAction.class).getSkipCount();
-
-            buildMetrics.jobBuildTestsTotal.labels(buildLabelValueArray).set(testsTotal);
-            buildMetrics.jobBuildTestsSkipped.labels(buildLabelValueArray).set(testsSkipped);
-            buildMetrics.jobBuildTestsFailing.labels(buildLabelValueArray).set(testsFail);
-        }
-    }
-
-    private boolean hasTestResults(Run<?, ?> job) {
-        return job.getAction(AbstractTestResultAction.class) != null;
-    }
 }
