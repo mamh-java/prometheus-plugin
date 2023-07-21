@@ -5,19 +5,16 @@ import hudson.util.FormValidation;
 import jenkins.YesNoMaybe;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.prometheus.config.disabledmetrics.DisabledMetricConfig;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,6 +57,8 @@ public class PrometheusConfiguration extends GlobalConfiguration {
 
     private boolean collectDiskUsage = true;
     private boolean collectNodeStatus = true;
+
+    private DisabledMetricConfig disabledMetricConfig = new DisabledMetricConfig(new ArrayList<>());
 
 
     public PrometheusConfiguration() {
@@ -286,6 +285,14 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         return parseParameterNamesFromStringSeparatedByComma(labeledBuildParameterNames);
     }
 
+    public DisabledMetricConfig getDisabledMetricConfig() {
+        return disabledMetricConfig;
+    }
+
+    @DataBoundSetter
+    public void setDisabledMetricConfig(DisabledMetricConfig disabledMetricConfig) {
+        this.disabledMetricConfig = disabledMetricConfig;
+    }
 
     public FormValidation doCheckPath(@QueryParameter String value) {
         if (StringUtils.isEmpty(value)) {
