@@ -5,7 +5,6 @@ import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
-import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;

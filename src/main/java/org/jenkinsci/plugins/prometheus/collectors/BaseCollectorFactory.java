@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus.collectors;
 
+import org.jenkinsci.plugins.prometheus.config.disabledmetrics.MetricStatusChecker;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 
 public abstract class BaseCollectorFactory {
@@ -13,7 +14,7 @@ public abstract class BaseCollectorFactory {
     }
 
     protected boolean isEnabledViaConfig(CollectorType type) {
-        // prepare for disable via config
-        return true;
+        String fullName = namespace + "_" + subsystem + "_" + type.getName();
+        return MetricStatusChecker.isEnabled(fullName);
     }
 }

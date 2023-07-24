@@ -6,7 +6,6 @@ import org.jenkinsci.plugins.prometheus.collectors.BaseCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
-import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 
 import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.*;
 
@@ -16,7 +15,7 @@ public class BuildCollectorFactory extends BaseCollectorFactory {
         super();
     }
 
-    public MetricCollector<Run, ? extends Collector> createCollector(CollectorType type, String[] labelNames, String prefix) {
+    public MetricCollector<Run<?, ?>, ? extends Collector> createCollector(CollectorType type, String[] labelNames, String prefix) {
         switch (type) {
             case BUILD_DURATION_GAUGE:
                 return isEnabledViaConfig(BUILD_DURATION_GAUGE) ? new BuildDurationGauge(labelNames, namespace, subsystem, prefix) : new NoOpMetricCollector<>();

@@ -6,7 +6,6 @@ import org.jenkinsci.plugins.prometheus.collectors.BaseCollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
-import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 
 import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.*;
 

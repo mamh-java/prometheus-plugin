@@ -11,19 +11,20 @@ import java.util.List;
 
 public class DisabledMetricConfig extends AbstractDescribableImpl<DisabledMetricConfig> {
 
-        private final List<Entry> entries;
+    private final List<Entry> entries;
 
-        @DataBoundConstructor
-        public DisabledMetricConfig(List<Entry> entries) {
-            this.entries = entries != null ? new ArrayList<>(entries) : Collections.emptyList();
-        }
+    @DataBoundConstructor
+    public DisabledMetricConfig(List<Entry> entries) {
+        this.entries = entries != null ? new ArrayList<>(entries) : Collections.emptyList();
+    }
 
-        public List<Entry> getEntries() {
-            return Collections.unmodifiableList(entries);
-        }
+    public List<Entry> getEntries() {
+        return Collections.unmodifiableList(entries);
+    }
 
-        @Extension
-        public static class DescriptorImpl extends Descriptor<DisabledMetricConfig> {}
+    @Extension
+    public static class DescriptorImpl extends Descriptor<DisabledMetricConfig> {
+    }
 
 
 }

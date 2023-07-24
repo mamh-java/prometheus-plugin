@@ -24,7 +24,10 @@ public class NamedDisabledMetric extends Entry {
 
     @Extension
     public static class DescriptorImpl extends Descriptor<Entry> {
-        @Override public String getDisplayName() { return "Fully qualified Name Entry"; }
+        @Override
+        public String getDisplayName() {
+            return "Fully qualified Name Entry";
+        }
 
     }
 

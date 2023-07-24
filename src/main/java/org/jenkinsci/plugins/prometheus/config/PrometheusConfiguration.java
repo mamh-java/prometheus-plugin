@@ -251,10 +251,12 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     public boolean isPerBuildMetrics() {
         return perBuildMetrics;
     }
+
     @DataBoundSetter
     public void setPerBuildMetrics(boolean perBuildMetrics) {
         this.perBuildMetrics = perBuildMetrics;
     }
+
     public boolean isCollectNodeStatus() {
         return collectNodeStatus;
     }
