@@ -52,6 +52,9 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     private boolean appendStatusLabel = false;
     private boolean perBuildMetrics = false;
 
+
+    private transient boolean collectDiskUsageEnvironmentVariableSet = false;
+
     private String labeledBuildParameterNames = "";
 
     private boolean collectDiskUsage = true;
@@ -115,7 +118,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     }
 
     @DataBoundSetter
-    public void setCollectDiskUsage(Boolean collectDiskUsage) {
+    public void setCollectDiskUsage(boolean collectDiskUsage) {
         this.collectDiskUsage = collectDiskUsage;
     }
 
@@ -123,11 +126,16 @@ public class PrometheusConfiguration extends GlobalConfiguration {
         try {
             final String envValue = System.getenv(COLLECT_DISK_USAGE);
             if (envValue != null) {
-                this.collectDiskUsage = getValidBooleanValueOrThrowException(envValue);
+                setCollectDiskUsage(getValidBooleanValueOrThrowException(envValue));
+                collectDiskUsageEnvironmentVariableSet = true;
             }
         } catch (IllegalArgumentException e) {
             logger.warn("Unable to parse environment variable '{}'. Must either be 'true' or 'false'. Ignoring...", COLLECT_DISK_USAGE);
         }
+    }
+
+    public boolean isCollectDiskUsageEnvironmentVariableSet() {
+        return collectDiskUsageEnvironmentVariableSet;
     }
 
     private boolean getValidBooleanValueOrThrowException(String value) throws IllegalArgumentException {
