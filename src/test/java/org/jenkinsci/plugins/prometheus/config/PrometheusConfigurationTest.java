@@ -173,7 +173,7 @@ public class PrometheusConfigurationTest {
 
     @Test
     public void shouldTakeConfiguredValueIfItIsConfigured() {
-        Mockito.doCallRealMethod().when(configuration).setCollectDiskUsage(any());
+        Mockito.doCallRealMethod().when(configuration).setCollectDiskUsage(anyBoolean());
         Mockito.doCallRealMethod().when(configuration).getCollectDiskUsage();
 
         // simulate someone configured it over the UI
