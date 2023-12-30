@@ -21,7 +21,7 @@ public class CounterManager {
     private HashMap<CounterEntry, MetricCollector<Run<?, ?>, ? extends Collector>> registeredCounters;
 
     // Static singleton instance.
-    private static CounterManager _Manager;
+    private static CounterManager manager;
 
     // Initialize the map
     private CounterManager() {
@@ -32,10 +32,10 @@ public class CounterManager {
      * Singleton instance method to get the manager.
      */
     public static CounterManager getManager() {
-        if (_Manager == null) {
-            _Manager = new CounterManager();
+        if (manager == null) {
+            manager = new CounterManager();
         }
-        return _Manager;
+        return manager;
     }
 
     /*
