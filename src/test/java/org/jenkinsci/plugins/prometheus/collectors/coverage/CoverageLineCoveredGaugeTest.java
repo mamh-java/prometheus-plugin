@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class CoverageInstructionMissedGaugeTest extends CoverageTest {
+public class CoverageLineCoveredGaugeTest extends CoverageTest {
 
 
-    public CoverageInstructionMissedGaugeTest() {
-        super(Baseline.PROJECT, Metric.INSTRUCTION);
+    public CoverageLineCoveredGaugeTest() {
+        super(Baseline.PROJECT, Metric.LINE);
     }
 
     @Test
     public void testCovered() {
-        setUpSuccessfulMocksForMissed();
-        CoverageInstructionMissedGauge sut = new CoverageInstructionMissedGauge(new String[]{"job"}, getNamespace(), getSubSystem());
+        setUpSuccessfulMocksForCovered();
+        CoverageLineCoveredGauge sut = new CoverageLineCoveredGauge(new String[]{"job"}, getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, new String[]{"myJob"});
 
@@ -27,15 +27,15 @@ public class CoverageInstructionMissedGaugeTest extends CoverageTest {
 
         Collector.MetricFamilySamples familySamples = metricFamilySamples.get(0);
 
-        Assertions.assertEquals("Returns the number of instructions missed", familySamples.help);
-        Assertions.assertEquals("default_jenkins_builds_coverage_instruction_missed", familySamples.name);
+        Assertions.assertEquals("Returns the number of lines covered", familySamples.help);
+        Assertions.assertEquals("default_jenkins_builds_coverage_line_covered", familySamples.name);
 
         List<Collector.MetricFamilySamples.Sample> samples = familySamples.samples;
 
         Assertions.assertEquals(1, samples.size());
 
         Collector.MetricFamilySamples.Sample sample = samples.get(0);
-        Assertions.assertEquals(5.0, sample.value);
+        Assertions.assertEquals(10.0, sample.value);
         Assertions.assertEquals("myJob", sample.labelValues.get(0));
 
     }
@@ -44,7 +44,7 @@ public class CoverageInstructionMissedGaugeTest extends CoverageTest {
     public void testNothingFailsIfNoCoverageFound() {
         setUpUnsuccessfulMocks();
 
-        CoverageInstructionMissedGauge sut = new CoverageInstructionMissedGauge(new String[]{"job"}, getNamespace(), getSubSystem());
+        CoverageLineCoveredGauge sut = new CoverageLineCoveredGauge(new String[]{"job"}, getNamespace(), getSubSystem());
 
         sut.calculateMetric(mock, new String[]{"myJob"});
 
@@ -53,8 +53,8 @@ public class CoverageInstructionMissedGaugeTest extends CoverageTest {
 
         Collector.MetricFamilySamples familySamples = metricFamilySamples.get(0);
 
-        Assertions.assertEquals("Returns the number of instructions missed", familySamples.help);
-        Assertions.assertEquals("default_jenkins_builds_coverage_instruction_missed", familySamples.name);
+        Assertions.assertEquals("Returns the number of lines covered", familySamples.help);
+        Assertions.assertEquals("default_jenkins_builds_coverage_line_covered", familySamples.name);
 
         List<Collector.MetricFamilySamples.Sample> samples = familySamples.samples;
 

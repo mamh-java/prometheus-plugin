@@ -10,20 +10,20 @@ import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 import java.util.Optional;
 
-public class CoverageBranchTotalGauge extends CoverageMetricsCollector<Run<?, ?>, Gauge> {
+public class CoverageClassPercentGauge extends CoverageMetricsCollector<Run<?, ?>, Gauge> {
 
-    protected CoverageBranchTotalGauge(String[] labelNames, String namespace, String subsystem) {
+    protected CoverageClassPercentGauge(String[] labelNames, String namespace, String subsystem) {
         super(labelNames, namespace, subsystem);
     }
 
     @Override
     protected CollectorType getCollectorType() {
-        return CollectorType.COVERAGE_BRANCH_TOTAL;
+        return CollectorType.COVERAGE_CLASS_PERCENT;
     }
 
     @Override
     protected String getHelpText() {
-        return "Returns the number of branches total";
+        return "Returns the coverage of classes in percent";
     }
 
     @Override
@@ -34,13 +34,14 @@ public class CoverageBranchTotalGauge extends CoverageMetricsCollector<Run<?, ?>
     @Override
     public void calculateMetric(Run<?, ?> jenkinsObject, String[] labelValues) {
 
-        Optional<Coverage> optional = getCoverage(jenkinsObject, Metric.BRANCH, Baseline.PROJECT);
+        Optional<Coverage> optional = getCoverage(jenkinsObject, Metric.CLASS, Baseline.PROJECT);
         if (optional.isEmpty()) {
             collector.labels(labelValues).set(-1);
             return;
         }
 
         Coverage coverage = optional.get();
-        collector.labels(labelValues).set(coverage.getTotal());
+        collector.labels(labelValues).set(calculatePercentage(coverage));
     }
+
 }
