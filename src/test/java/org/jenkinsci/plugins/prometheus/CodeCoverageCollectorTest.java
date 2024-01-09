@@ -117,8 +117,10 @@ class CodeCoverageCollectorTest {
             configurationUtils.when(ConfigurationUtils::getNamespace).thenReturn("foo");
             configurationUtils.when(ConfigurationUtils::getSubSystem).thenReturn("bar");
             jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
-            configurationStatic.when(PrometheusConfiguration::get).thenReturn(config);
+
             Job jobUnderTest = mock(Job.class);
+            when(jobUnderTest.getFullName()).thenReturn("some/job");
+
             Run lastBuild = mock(Run.class);
             when(lastBuild.isBuilding()).thenReturn(false);
             when(jobUnderTest.getLastBuild()).thenReturn(lastBuild);
@@ -129,10 +131,12 @@ class CodeCoverageCollectorTest {
             when(config.getJobAttributeName()).thenReturn("jenkins_job");
             when(config.isCollectCodeCoverage()).thenReturn(true);
 
+            configurationStatic.when(PrometheusConfiguration::get).thenReturn(config);
+
             CodeCoverageCollector sut = new CodeCoverageCollector();
 
             List<Collector.MetricFamilySamples> collect = sut.collect();
-            assertEquals(12, collect.size(), "12 metrics should have been collected");
+            assertEquals(20, collect.size(), "20 metrics should have been collected");
         }
     }
 }
