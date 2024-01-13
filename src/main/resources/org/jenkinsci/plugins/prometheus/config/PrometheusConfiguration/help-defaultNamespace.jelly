@@ -3,6 +3,7 @@
   <div>
     <p>
       The default namespace (default value is 'default'). Setting this to an empty value will return the build values as Jenkins metrics.
+      Note: If you change the namespace the counter metrics will be reset
     </p>
   </div>
 </j:jelly>
