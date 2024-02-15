@@ -23,10 +23,10 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
     private static BuildCompletionListener _Listener;
 
     // Lock to synchronize iteration and adding to the collection
-    private Lock lock;
+    private final Lock lock;
 
     // Holds the list o runs in queue.
-    private List<Run<?,?>> runStack;
+    private final List<Run<?,?>> runStack;
 
     // Iterable that defines a close method (allows us to use try resource) block
     // in JobCollector.java
@@ -83,9 +83,9 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
     public synchronized CloseableIterator<Run<?,?>> iterator(){
         // acquire lock before iterating
         lock.lock();
-        return new CloseableIterator<Run<?,?>>() {
+        return new CloseableIterator<>() {
             // Get iterator from the list
-            private Iterator<Run<?,?>> iterator = runStack.iterator();
+            private final Iterator<Run<?, ?>> iterator = runStack.iterator();
 
             @Override
             public boolean hasNext() {
@@ -93,7 +93,7 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
             }
 
             @Override
-            public Run<?,?> next() {
+            public Run<?, ?> next() {
                 return iterator.next();
             }
 

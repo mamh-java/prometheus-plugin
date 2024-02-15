@@ -23,16 +23,9 @@ import java.util.List;
 
 public class JobCollector extends Collector {
 
-    private static final Logger logger = LoggerFactory.getLogger(JobCollector.class);
-    private static final String NOT_AVAILABLE = "NA";
-    private static final String UNDEFINED = "UNDEFINED";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobCollector.class);
 
     private MetricCollector<Run<?, ?>, ? extends Collector> summary;
-    private MetricCollector<Run<?, ?>, ? extends Collector> jobSuccessCount;
-    private MetricCollector<Run<?, ?>, ? extends Collector> jobFailedCount;
-    private MetricCollector<Run<?, ?>, ? extends Collector> jobAbortedCount;
-    private MetricCollector<Run<?, ?>, ? extends Collector> jobUnstableCount;
-    private MetricCollector<Run<?, ?>, ? extends Collector> jobTotalCount;
     private MetricCollector<Job<?, ?>, ? extends Collector> jobHealthScoreGauge;
     private MetricCollector<Job<?, ?>, ? extends Collector> nbBuildsGauge;
     private MetricCollector<Job<?, ?>, ? extends Collector> buildDiscardGauge;
@@ -79,7 +72,7 @@ public class JobCollector extends Collector {
 
     @Override
     public List<MetricFamilySamples> collect() {
-        logger.debug("Collecting metrics for prometheus");
+        LOGGER.debug("Collecting metrics for prometheus");
 
         CollectorFactory factory = new CollectorFactory();
         List<MetricFamilySamples> samples = new ArrayList<>();
@@ -108,12 +101,12 @@ public class JobCollector extends Collector {
         
         // Counter manager acts as a DB to retrieve any counters that are already in memory instead of reinitializing
         // them with each iteration of collect.
-        var manager = CounterManager.getManager();       
-        jobSuccessCount = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, labelBaseNameArray, null);
-        jobFailedCount = manager.getCounter(CollectorType.BUILD_FAILED_COUNTER, labelBaseNameArray, null);
-        jobTotalCount = manager.getCounter(CollectorType.BUILD_TOTAL_COUNTER, labelBaseNameArray, null);
-        jobAbortedCount = manager.getCounter(CollectorType.BUILD_ABORTED_COUNTER, labelBaseNameArray, null);
-        jobUnstableCount = manager.getCounter(CollectorType.BUILD_UNSTABLE_COUNTER, labelBaseNameArray, null);
+        var manager = CounterManager.getManager();
+        MetricCollector<Run<?, ?>, ? extends Collector> jobSuccessCount = manager.getCounter(CollectorType.BUILD_SUCCESSFUL_COUNTER, labelBaseNameArray, null);
+        MetricCollector<Run<?, ?>, ? extends Collector> jobFailedCount = manager.getCounter(CollectorType.BUILD_FAILED_COUNTER, labelBaseNameArray, null);
+        MetricCollector<Run<?, ?>, ? extends Collector> jobTotalCount = manager.getCounter(CollectorType.BUILD_TOTAL_COUNTER, labelBaseNameArray, null);
+        MetricCollector<Run<?, ?>, ? extends Collector> jobAbortedCount = manager.getCounter(CollectorType.BUILD_ABORTED_COUNTER, labelBaseNameArray, null);
+        MetricCollector<Run<?, ?>, ? extends Collector> jobUnstableCount = manager.getCounter(CollectorType.BUILD_UNSTABLE_COUNTER, labelBaseNameArray, null);
 
         // This is a try with resources block it ensures close is called
         // so if an exception occurs we don't reach deadlock. This is analogous to a using
@@ -162,17 +155,17 @@ public class JobCollector extends Collector {
         Jobs.forEachJob(job -> {
             try {
                 if (!job.isBuildable() && processDisabledJobs) {
-                    logger.debug("job [{}] is disabled", job.getFullName());
+                    LOGGER.debug("job [{}] is disabled", job.getFullName());
                     return;
                 }
-                logger.debug("Collecting metrics for job [{}]", job.getFullName());
+                LOGGER.debug("Collecting metrics for job [{}]", job.getFullName());
                 appendJobMetrics(job);
             } catch (IllegalArgumentException e) {
                 if (!e.getMessage().contains("Incorrect number of labels")) {
-                    logger.warn("Caught error when processing job [{}] error: ", job.getFullName(), e);
+                    LOGGER.warn("Caught error when processing job [{}] error: ", job.getFullName(), e);
                 } // else - ignore exception
             } catch (Exception e) {
-                logger.warn("Caught error when processing job [{}] error: ", job.getFullName(), e);
+                LOGGER.warn("Caught error when processing job [{}] error: ", job.getFullName(), e);
             }
 
         });
@@ -200,7 +193,7 @@ public class JobCollector extends Collector {
         for (MetricFamilySamples metricFamilySample : newSamples) {
             int sampleCount = metricFamilySample.samples.size();
             if (sampleCount > 0) {
-                logger.debug(logMessage, sampleCount, metricFamilySample.name);
+                LOGGER.debug(logMessage, sampleCount, metricFamilySample.name);
                 allSamples.addAll(newSamples);
             }
         }
@@ -225,7 +218,7 @@ public class JobCollector extends Collector {
         Run<?, ?> lastBuild = job.getLastBuild();
         // Never built
         if (null == lastBuild) {
-            logger.debug("job [{}] never built", job.getFullName());
+            LOGGER.debug("job [{}] never built", job.getFullName());
             return;
         }
 
@@ -239,9 +232,9 @@ public class JobCollector extends Collector {
 
         Run<?, ?> run = lastBuild;
         while (run != null) {
-            logger.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
+            LOGGER.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
             if (Runs.includeBuildInMetrics(run)) {
-                logger.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
+                LOGGER.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
                 String[] labelValueArray = JobLabel.getJobLabelVaues(job, run);
 
                 summary.calculateMetric(run, labelValueArray);
@@ -257,7 +250,7 @@ public class JobCollector extends Collector {
     }
 
     private void processRun(Job<?, ?> job, Run<?, ?> run, String[] buildLabelValueArray, BuildMetrics buildMetrics) {
-        logger.debug("Processing run [{}] from job [{}]", run.getNumber(), job.getName());
+        LOGGER.debug("Processing run [{}] from job [{}]", run.getNumber(), job.getName());
         buildMetrics.jobBuildResultOrdinal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildResult.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildStartMillis.calculateMetric(run, buildLabelValueArray);

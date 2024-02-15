@@ -352,7 +352,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     }
 
     private String[] parseParameterNamesFromStringSeparatedByComma(String stringValue) {
-        if (stringValue == null || stringValue.trim().length() < 1) {
+        if (stringValue == null || stringValue.trim().isEmpty()) {
             return new String[]{};
         }
         return stringValue.split("\\s*,\\s*");
