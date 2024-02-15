@@ -1,17 +1,15 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.MockedRunCollectorTest;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+
+import java.util.Arrays;
+
+import static org.mockito.Mockito.*;
 
 public class CounterManagerTest extends MockedRunCollectorTest {
     private CounterManager manager;

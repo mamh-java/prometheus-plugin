@@ -1,15 +1,14 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
+import hudson.model.Job;
+import hudson.model.Result;
+import hudson.model.Run;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.Runs;
 
-import hudson.model.Job;
-import hudson.model.Result;
-import hudson.model.Run;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /*
  * Static class that defines what labels should be added to a metric.
@@ -62,8 +61,7 @@ public class JobLabel {
         if (repoName == null) {
             repoName = NOT_AVAILABLE;
         }
-        String[] baseLabelValueArray = { job.getFullName(), repoName, String.valueOf(job.isBuildable()) };
-        return baseLabelValueArray;
+        return new String[]{ job.getFullName(), repoName, String.valueOf(job.isBuildable()) };
     }
 
     /*

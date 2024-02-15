@@ -13,7 +13,7 @@ public abstract class BaseMetricCollector<T, I extends SimpleCollector<?>> imple
     protected final String namespace;
     protected final String subsystem;
     protected final String namePrefix;
-    protected I collector;
+    protected final I collector;
 
     protected BaseMetricCollector(String[] labelNames, String namespace, String subsystem, String namePrefix) {
         this.labelNames = labelNames;

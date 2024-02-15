@@ -1,11 +1,9 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
 import io.prometheus.client.SimpleCollector;
-
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class BuildFailedCounter extends BuildsMetricCollector<Run<?, ?>, Counter>  {

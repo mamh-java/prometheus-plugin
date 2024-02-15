@@ -1,12 +1,12 @@
 package org.jenkinsci.plugins.prometheus.config.disabledmetrics;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.CollectorRegistry;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;

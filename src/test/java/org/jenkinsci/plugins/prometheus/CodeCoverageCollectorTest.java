@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.prometheus;
 
 import hudson.Plugin;
-import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.plugins.coverage.metrics.steps.CoverageBuildAction;
@@ -9,7 +8,6 @@ import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
-import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

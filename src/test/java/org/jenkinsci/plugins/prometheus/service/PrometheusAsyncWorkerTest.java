@@ -1,15 +1,10 @@
 package org.jenkinsci.plugins.prometheus.service;
 
-import hudson.Plugin;
-import io.prometheus.client.Collector;
-import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.prometheus.CodeCoverageCollector;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.mockito.MockedStatic;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;

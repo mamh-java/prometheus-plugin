@@ -1,14 +1,13 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
+import hudson.model.Run;
+import io.prometheus.client.Collector;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
 
-import hudson.model.Run;
-import io.prometheus.client.Collector;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /*
  * This class acts as a database to keep track of counters and return an existing counter

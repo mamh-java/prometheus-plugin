@@ -4,7 +4,6 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.prometheus.client.Counter;
 import io.prometheus.client.SimpleCollector;
-
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 
 public class BuildTotalCounter extends BuildsMetricCollector<Run<?, ?>, Counter> {
