@@ -87,22 +87,7 @@ public class JobCollector extends Collector {
 
         String[] labelBaseNameArray = {jobAttribute, "repo", "buildable"};
 
-        String[] labelNameArray = labelBaseNameArray;
-        if (PrometheusConfiguration.get().isAppendParamLabel()) {
-            labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
-            labelNameArray[labelNameArray.length - 1] = "parameters";
-        }
-        if (PrometheusConfiguration.get().isAppendStatusLabel()) {
-            labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
-            labelNameArray[labelNameArray.length - 1] = "status";
-        }
-
-        String[] buildParameterNamesAsArray = PrometheusConfiguration.get().getLabeledBuildParameterNamesAsArray();
-        for (String buildParam : buildParameterNamesAsArray) {
-            labelNameArray = Arrays.copyOf(labelNameArray, labelNameArray.length + 1);
-            labelNameArray[labelNameArray.length - 1] = buildParam.trim();
-        }
-
+        String[] labelNameArray = JobLabel.getBaseLabelNames();
 
         boolean processDisabledJobs = PrometheusConfiguration.get().isProcessingDisabledBuilds();
         boolean ignoreBuildMetrics =

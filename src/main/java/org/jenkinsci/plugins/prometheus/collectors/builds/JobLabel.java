@@ -24,9 +24,8 @@ public class JobLabel {
      */
     public static String[] getBaseLabelNames(){
         String jobAttribute = PrometheusConfiguration.get().getJobAttributeName();
-        String[] labelBaseNameArray = {jobAttribute, "repo", "buildable"};
 
-        return labelBaseNameArray;
+        return new String[]{jobAttribute, "repo", "buildable"};
     }
 
     /*
