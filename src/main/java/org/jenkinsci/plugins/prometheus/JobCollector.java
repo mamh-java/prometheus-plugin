@@ -8,9 +8,9 @@ import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
 import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener;
+import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener.CloseableIterator;
 import org.jenkinsci.plugins.prometheus.collectors.builds.CounterManager;
 import org.jenkinsci.plugins.prometheus.collectors.builds.JobLabel;
-import org.jenkinsci.plugins.prometheus.collectors.builds.BuildCompletionListener.CloseableIterator;
 import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.util.Jobs;
 import org.jenkinsci.plugins.prometheus.util.Runs;
@@ -76,11 +76,9 @@ public class JobCollector extends Collector {
 
         CollectorFactory factory = new CollectorFactory();
         List<MetricFamilySamples> samples = new ArrayList<>();
-        String jobAttribute = PrometheusConfiguration.get().getJobAttributeName();
 
-        String[] labelBaseNameArray = {jobAttribute, "repo", "buildable"};
-
-        String[] labelNameArray = JobLabel.getBaseLabelNames();
+        String[] labelBaseNameArray = JobLabel.getBaseLabelNames();
+        String[] labelNameArray = JobLabel.getJobLabelNames();
 
         boolean processDisabledJobs = PrometheusConfiguration.get().isProcessingDisabledBuilds();
         boolean ignoreBuildMetrics =
