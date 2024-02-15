@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -42,7 +43,7 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
 
     /*
      * Extension tells Jenkins to register this class as a RunListener and to use
-     * this method in order to retrieve an instance of the class. It is a singleton
+     * this method in order to retrieve an instance of the class. It is a singleton,
      * so we can get the same reference registered in Jenkins in another class.
      */
     @Extension
@@ -56,7 +57,7 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
     /*
      * Fires on completion of a job.
      */
-    public void onCompleted(Run<?,?> run, TaskListener listener){
+    public void onCompleted(Run<?,?> run, @NonNull TaskListener listener){
         push(run);
     }
 

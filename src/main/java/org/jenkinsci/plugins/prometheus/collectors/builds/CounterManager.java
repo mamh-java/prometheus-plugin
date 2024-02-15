@@ -14,7 +14,7 @@ import java.util.HashMap;
  * if it has already been initialized. This class is necessary due to the way the plugin handles
  * configuration changes. Changing the plugins configuration can cause the labels of a metric
  * to change. This manager compares whether it has seen a counter with a specific label before
- * and returns an existing counter if it exists. Otherwise it will return a new counter initialized at zero.
+ * and returns an existing counter if it exists. Otherwise, it will return a new counter initialized at zero.
  */
 public class CounterManager {
     // Keeps track of Counters we have seen.

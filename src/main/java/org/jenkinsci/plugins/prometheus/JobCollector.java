@@ -109,7 +109,7 @@ public class JobCollector extends Collector {
         // This is a try with resources block it ensures close is called
         // so if an exception occurs we don't reach deadlock. This is analogous to a using
         // block where dispose is called after we leave the block.
-        // The closeable iterator synchronizes receiving jobs and reading the iterator
+        // The closeable iterator synchronizes receiving jobs and reading the iterator,
         // so we don't modify the collection while iterating.
         try (CloseableIterator<Run<?,?>> iterator = listener.iterator()) {
             // Go through each run received since the last scrape.
@@ -233,7 +233,7 @@ public class JobCollector extends Collector {
             LOGGER.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
             if (Runs.includeBuildInMetrics(run)) {
                 LOGGER.debug("getting build info for run [{}] from job [{}]", run.getNumber(), job.getName());
-                String[] labelValueArray = JobLabel.getJobLabelVaues(job, run);
+                String[] labelValueArray = JobLabel.getJobLabelValues(job, run);
 
                 summary.calculateMetric(run, labelValueArray);
                 if (isPerBuildMetrics) {

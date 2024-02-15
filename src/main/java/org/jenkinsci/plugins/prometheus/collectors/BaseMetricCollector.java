@@ -79,7 +79,7 @@ public abstract class BaseMetricCollector<T, I extends SimpleCollector<?>> imple
     }
 
     private boolean isNamePrefixSet() {
-        return namePrefix != null && !"".equals(namePrefix);
+        return namePrefix != null && !namePrefix.isEmpty();
     }
 
     protected String getBaseName() {

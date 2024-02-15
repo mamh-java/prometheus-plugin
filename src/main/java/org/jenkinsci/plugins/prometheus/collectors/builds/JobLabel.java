@@ -52,11 +52,11 @@ public class JobLabel {
     }
 
     /*
-     * Gets the base label values of a job. Common fields between all of the metric label values.
+     * Gets the base label values of a job. Common fields between all the metric label values.
      * @return array of base labels.
      */
     public static String[] getBaseLabelValues(Job<?, ?> job) {
-        // Add this to the repo as well so I can group by Github Repository
+        // Add this to the repo as well, so I can group by GitHub Repository
         String repoName = StringUtils.substringBetween(job.getFullName(), "/");
         if (repoName == null) {
             repoName = NOT_AVAILABLE;
@@ -68,7 +68,7 @@ public class JobLabel {
      * Gets label values specific to job centric metrics.
      * @return array of label values for a job.
      */
-    public static String[] getJobLabelVaues(Job<?, ?> job, Run<?, ?> run) {
+    public static String[] getJobLabelValues(Job<?, ?> job, Run<?, ?> run) {
         boolean isAppendParamLabel = PrometheusConfiguration.get().isAppendParamLabel();
         boolean isAppendStatusLabel = PrometheusConfiguration.get().isAppendStatusLabel();
         String[] buildParameterNamesAsArray = PrometheusConfiguration.get().getLabeledBuildParameterNamesAsArray();
