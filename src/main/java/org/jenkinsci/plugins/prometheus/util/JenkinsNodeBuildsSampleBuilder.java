@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public class JenkinsNodeBuildsSampleBuilder extends DefaultSampleBuilder {
     // Note that nodes can have '.' in their name
-    static Pattern PATTERN = Pattern.compile("jenkins\\.node(\\.(?<node>.*))?\\.builds");
+    final static Pattern PATTERN = Pattern.compile("jenkins\\.node(\\.(?<node>.*))?\\.builds");
 
     @Override
     public Collector.MetricFamilySamples.Sample createSample(String dropwizardName, String nameSuffix, List<String> additionalLabelNames, List<String> additionalLabelValues, double value) {

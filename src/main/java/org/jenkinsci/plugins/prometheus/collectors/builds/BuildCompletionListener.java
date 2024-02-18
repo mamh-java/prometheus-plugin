@@ -1,16 +1,17 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.Extension;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import hudson.model.listeners.RunListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import hudson.Extension;
-import hudson.model.Run;
-import hudson.model.TaskListener;
-import hudson.model.listeners.RunListener;
 
 /*
  * Listens to builds that have been completed and stores them in a list.
@@ -23,10 +24,10 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
     private static BuildCompletionListener _Listener;
 
     // Lock to synchronize iteration and adding to the collection
-    private Lock lock;
+    private final Lock lock;
 
     // Holds the list o runs in queue.
-    private List<Run<?,?>> runStack;
+    private final List<Run<?,?>> runStack;
 
     // Iterable that defines a close method (allows us to use try resource) block
     // in JobCollector.java
@@ -42,7 +43,7 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
 
     /*
      * Extension tells Jenkins to register this class as a RunListener and to use
-     * this method in order to retrieve an instance of the class. It is a singleton
+     * this method in order to retrieve an instance of the class. It is a singleton,
      * so we can get the same reference registered in Jenkins in another class.
      */
     @Extension
@@ -56,7 +57,7 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
     /*
      * Fires on completion of a job.
      */
-    public void onCompleted(Run<?,?> run, TaskListener listener){
+    public void onCompleted(Run<?,?> run, @NonNull TaskListener listener){
         push(run);
     }
 
@@ -83,9 +84,9 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
     public synchronized CloseableIterator<Run<?,?>> iterator(){
         // acquire lock before iterating
         lock.lock();
-        return new CloseableIterator<Run<?,?>>() {
+        return new CloseableIterator<>() {
             // Get iterator from the list
-            private Iterator<Run<?,?>> iterator = runStack.iterator();
+            private final Iterator<Run<?, ?>> iterator = runStack.iterator();
 
             @Override
             public boolean hasNext() {
@@ -93,7 +94,7 @@ public class BuildCompletionListener extends RunListener<Run<?,?>> {
             }
 
             @Override
-            public Run<?,?> next() {
+            public Run<?, ?> next() {
                 return iterator.next();
             }
 

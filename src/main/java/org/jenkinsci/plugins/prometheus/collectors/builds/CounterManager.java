@@ -1,33 +1,31 @@
 package org.jenkinsci.plugins.prometheus.collectors.builds;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
-import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
-import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
-import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
-import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
-
 import hudson.model.Run;
 import io.prometheus.client.Collector;
+import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
+import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
+import org.jenkinsci.plugins.prometheus.util.ConfigurationUtils;
+
+import java.util.Arrays;
+import java.util.HashMap;
 
 /*
  * This class acts as a database to keep track of counters and return an existing counter
  * if it has already been initialized. This class is necessary due to the way the plugin handles
  * configuration changes. Changing the plugins configuration can cause the labels of a metric
  * to change. This manager compares whether it has seen a counter with a specific label before
- * and returns an existing counter if it exists. Otherwise it will return a new counter initialized at zero.
+ * and returns an existing counter if it exists. Otherwise, it will return a new counter initialized at zero.
  */
 public class CounterManager {
     // Keeps track of Counters we have seen.
-    private HashMap<CounterEntry, MetricCollector<Run<?, ?>, ? extends Collector>> registeredCounters;
+    private final HashMap<CounterEntry, MetricCollector<Run<?, ?>, ? extends Collector>> registeredCounters;
 
     // Static singleton instance.
     private static CounterManager manager;
 
     // Initialize the map
     private CounterManager() {
-        registeredCounters = new HashMap<CounterEntry, MetricCollector<Run<?, ?>, ? extends Collector>>();
+        registeredCounters = new HashMap<>();
     }
 
     /*
@@ -49,7 +47,7 @@ public class CounterManager {
     }
 
     /*
-     * Retrives a counter or initializes a new one if it doesn't exist
+     * Retrieves a counter or initializes a new one if it doesn't exist
      * @return Metric collector counter.
      */
     public MetricCollector<Run<?, ?>, ? extends Collector> getCounter(CollectorType type, String[]labels, String prefix){
@@ -74,16 +72,16 @@ public class CounterManager {
      */
     private static class CounterEntry {
         // Labels that the counter was initialized with
-        private String[] labels;
+        private final String[] labels;
 
         // What collector type the counter is.
-        private CollectorType type;
+        private final CollectorType type;
 
         // Prefix of the counter.
-        private String prefix;
+        private final String prefix;
 
         // namespace of the counter
-        private String namespace;
+        private final String namespace;
 
         /*
          * Creates new counter entry
@@ -128,8 +126,7 @@ public class CounterManager {
             int typeHash = type != null ? type.hashCode() : 0;
             int prefixHash = prefix != null ? prefix.hashCode() : 0;
             int namespaceHash = namespace != null ? namespace.hashCode() : 0;
-            int result = 31 * (typeHash + Arrays.hashCode(labels) + prefixHash + namespaceHash);
-            return result;
+            return 31 * (typeHash + Arrays.hashCode(labels) + prefixHash + namespaceHash);
         }
     }
 }

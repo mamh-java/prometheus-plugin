@@ -2,7 +2,10 @@ package org.jenkinsci.plugins.prometheus.config.disabledmetrics;
 
 import io.prometheus.client.Collector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 
 public class FilteredMetricEnumeration implements Enumeration<Collector.MetricFamilySamples> {
 

@@ -1,13 +1,9 @@
 package org.jenkinsci.plugins.prometheus.config.disabledmetrics;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Descriptor;
-import hudson.util.FormValidation;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public class RegexDisabledMetric extends Entry {
 
@@ -30,6 +26,7 @@ public class RegexDisabledMetric extends Entry {
     @Extension
     public static class DescriptorImpl extends Descriptor<Entry> {
         @Override
+        @NonNull
         public String getDisplayName() {
             return "Regex Entry";
         }
