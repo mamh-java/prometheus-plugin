@@ -34,18 +34,22 @@ public class PrometheusActionTest {
     @Mock
     private PrometheusConfiguration configuration;
 
+    private MockedStatic<ExtensionList> extensionListStatic;
     private MockedStatic<Jenkins> jenkinsStatic;
 
     @BeforeEach
     public void setUp() {
         jenkinsStatic = mockStatic(Jenkins.class);
         jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
-        when(jenkins.getDescriptor(PrometheusConfiguration.class)).thenReturn(configuration);
+
         when(configuration.getAdditionalPath()).thenReturn("prometheus");
+        extensionListStatic = mockStatic(ExtensionList.class);
+        extensionListStatic.when(() -> ExtensionList.lookupSingleton(PrometheusConfiguration.class)).thenReturn(configuration);
     }
 
     @AfterEach
     public void tearDown() {
+        extensionListStatic.close();
         jenkinsStatic.close();
     }
 
@@ -92,23 +96,23 @@ public class PrometheusActionTest {
         PrometheusMetrics prometheusMetrics = mock(PrometheusMetrics.class);
         String responseBody = "testMetric";
         when(prometheusMetrics.getMetrics()).thenReturn(responseBody);
-        try (MockedStatic<ExtensionList> extensionListMockedStatic = mockStatic(ExtensionList.class)) {
-            extensionListMockedStatic.when(() -> ExtensionList.lookupSingleton(PrometheusMetrics.class)).thenReturn(prometheusMetrics);
-            StaplerRequest request = mock(StaplerRequest.class);
-            String url = "prometheus";
-            when(request.getRestOfPath()).thenReturn(url);
 
-            // when
-            HttpResponse actual = action.doDynamic(request);
+        extensionListStatic.when(() -> ExtensionList.lookupSingleton(PrometheusMetrics.class)).thenReturn(prometheusMetrics);
+        StaplerRequest request = mock(StaplerRequest.class);
+        String url = "prometheus";
+        when(request.getRestOfPath()).thenReturn(url);
 
-            // then
-            AssertStaplerResponse.from(actual)
-                    .call()
-                    .assertHttpStatus(HTTP_OK)
-                    .assertContentType(TextFormat.CONTENT_TYPE_004)
-                    .assertHttpHeader("Cache-Control", "must-revalidate,no-cache,no-store")
-                    .assertBody(responseBody);
-        }
+        // when
+        HttpResponse actual = action.doDynamic(request);
+
+        // then
+        AssertStaplerResponse.from(actual)
+                .call()
+                .assertHttpStatus(HTTP_OK)
+                .assertContentType(TextFormat.CONTENT_TYPE_004)
+                .assertHttpHeader("Cache-Control", "must-revalidate,no-cache,no-store")
+                .assertBody(responseBody);
+
 
     }
 

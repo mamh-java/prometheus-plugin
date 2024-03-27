@@ -8,4 +8,6 @@ public interface PrometheusMetrics extends ExtensionPoint {
 
     void collectMetrics();
 
+    void initialize();
+
 }

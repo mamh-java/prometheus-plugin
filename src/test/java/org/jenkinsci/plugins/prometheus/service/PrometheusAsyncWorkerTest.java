@@ -67,5 +67,9 @@ public class PrometheusAsyncWorkerTest {
             cachedMetrics.set(metrics);
         }
 
+        @Override
+        public void initialize() {
+            
+        }
     }
 }

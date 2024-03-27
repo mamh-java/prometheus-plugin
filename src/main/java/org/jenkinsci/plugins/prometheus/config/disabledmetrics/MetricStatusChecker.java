@@ -18,10 +18,6 @@ public class MetricStatusChecker {
     public static boolean isEnabled(String metricName) {
 
         PrometheusConfiguration configuration = PrometheusConfiguration.get();
-        if (configuration == null) {
-            LOGGER.warn("Cannot check if metric is enabled. Unable to get PrometheusConfiguration");
-            return true;
-        }
 
         DisabledMetricConfig disabledMetricConfig = configuration.getDisabledMetricConfig();
         if (disabledMetricConfig == null) {

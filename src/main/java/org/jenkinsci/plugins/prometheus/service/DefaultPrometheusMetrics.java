@@ -2,8 +2,6 @@ package org.jenkinsci.plugins.prometheus.service;
 
 import hudson.Extension;
 import hudson.ExtensionList;
-import hudson.init.InitMilestone;
-import hudson.init.Initializer;
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
@@ -30,32 +28,11 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
 
     private volatile boolean initialized = false;
     private volatile boolean initializing = false;
-    private final CollectorRegistry collectorRegistry;
+    private CollectorRegistry collectorRegistry;
     private final AtomicReference<String> cachedMetrics;
 
     public DefaultPrometheusMetrics() {
-        this.collectorRegistry = CollectorRegistry.defaultRegistry;
         this.cachedMetrics = new AtomicReference<>("");
-    }
-
-    @Initializer(after = InitMilestone.JOB_LOADED)
-    public void registerCollectors() {
-        if (!initialized && !initializing) {
-            initializing = true;
-            LOGGER.debug("Initializing...");
-            collectorRegistry.register(new JobCollector());
-            collectorRegistry.register(new JenkinsStatusCollector());
-            collectorRegistry.register(
-                    new DropwizardExports(Metrics.metricRegistry(), new JenkinsNodeBuildsSampleBuilder()));
-            collectorRegistry.register(new DiskUsageCollector());
-            collectorRegistry.register(new ExecutorCollector());
-            collectorRegistry.register(new CodeCoverageCollector());
-            // other collectors from other plugins
-            ExtensionList.lookup(Collector.class).forEach(collectorRegistry::register);
-            DefaultExports.initialize();
-            initialized = true;
-            initializing = false;
-        }
     }
 
     @Override
@@ -74,6 +51,27 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
             cachedMetrics.set(buffer.toString());
         } catch (IOException e) {
             LOGGER.debug("Unable to collect metrics");
+        }
+    }
+
+    @Override
+    public void initialize() {
+        if (!initialized && !initializing) {
+            this.collectorRegistry = CollectorRegistry.defaultRegistry;
+            initializing = true;
+            LOGGER.debug("Initializing...");
+            collectorRegistry.register(new JobCollector());
+            collectorRegistry.register(new JenkinsStatusCollector());
+            collectorRegistry.register(
+                    new DropwizardExports(Metrics.metricRegistry(), new JenkinsNodeBuildsSampleBuilder()));
+            collectorRegistry.register(new DiskUsageCollector());
+            collectorRegistry.register(new ExecutorCollector());
+            collectorRegistry.register(new CodeCoverageCollector());
+            // other collectors from other plugins
+            ExtensionList.lookup(Collector.class).forEach(collectorRegistry::register);
+            DefaultExports.initialize();
+            initialized = true;
+            initializing = false;
         }
     }
 }

@@ -16,26 +16,6 @@ import static org.mockito.Mockito.*;
 public class MetricStatusCheckerTest {
 
     @Test
-    void testNoConfigWontFail() {
-        Jenkins jenkins = mock(Jenkins.class);
-
-        PrometheusConfiguration mockedConfig = mock(PrometheusConfiguration.class);
-        String namespace = "TestNamespace";
-
-        when(mockedConfig.getDefaultNamespace()).thenReturn(namespace);
-        when(mockedConfig.isCollectNodeStatus()).thenReturn(false);
-
-        try (MockedStatic<Jenkins> jenkinsStatic = mockStatic(Jenkins.class);
-             MockedStatic<PrometheusConfiguration> configStatic = mockStatic(PrometheusConfiguration.class)) {
-            jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
-            configStatic.when(PrometheusConfiguration::get).thenReturn(null);
-
-            boolean enabled = MetricStatusChecker.isEnabled("some_metric");
-            Assertions.assertTrue(enabled);
-        }
-    }
-
-    @Test
     void testNoDisabledMetricConfigWontFail() {
         Jenkins jenkins = mock(Jenkins.class);
 

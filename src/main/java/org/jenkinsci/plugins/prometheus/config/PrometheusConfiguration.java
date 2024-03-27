@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.prometheus.config;
 
 import hudson.Extension;
+import hudson.ExtensionList;
 import hudson.util.FormValidation;
 import jenkins.YesNoMaybe;
 import jenkins.model.GlobalConfiguration;
@@ -76,7 +77,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     }
 
     public static PrometheusConfiguration get() {
-        return (PrometheusConfiguration) Jenkins.get().getDescriptor(PrometheusConfiguration.class);
+        return ExtensionList.lookupSingleton(PrometheusConfiguration.class);
     }
 
     @Override
