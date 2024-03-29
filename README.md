@@ -103,9 +103,11 @@ Have a look at CONTRIBUTING.md. There are 3 easy ways to contribute to this proj
 
 Commit and push your changes.
 
+```
 git add -A 
 git commit -m "Your commit message"
 git push --set-upstream origin new-branch
+```
 Create a Pull Request by navigating to your forked repository and clicking the New pull request button on your left-hand side of the page.
 
 Add in a title, edit the PR template, and then press the Create pull request button.
