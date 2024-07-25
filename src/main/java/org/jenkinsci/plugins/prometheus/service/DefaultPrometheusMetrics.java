@@ -39,11 +39,13 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
         CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
         DefaultExports.initialize();
         this.collectorRegistry = collectorRegistry;
+        // Workaround for #683
+        this.collectorRegistry.clear();
         this.cachedMetrics = new AtomicReference<>("");
     }
 
     public static synchronized DefaultPrometheusMetrics get() {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new DefaultPrometheusMetrics();
         }
         return INSTANCE;
