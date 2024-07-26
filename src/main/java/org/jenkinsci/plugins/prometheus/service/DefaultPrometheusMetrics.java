@@ -36,9 +36,8 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
     private final AtomicReference<String> cachedMetrics;
 
     private DefaultPrometheusMetrics() {
-        CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
+        this.collectorRegistry = CollectorRegistry.defaultRegistry;
         DefaultExports.initialize();
-        this.collectorRegistry = collectorRegistry;
         this.cachedMetrics = new AtomicReference<>("");
     }
 
@@ -50,13 +49,13 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
     }
 
     @Restricted(NoExternalUse.class)
-    private void registerCollector(@NonNull Collector collector) {
+    private synchronized void registerCollector(@NonNull Collector collector) {
         collectorRegistry.register(collector);
-        logger.debug(String.format("Collector %s registered", collector.getClass().getName()));
+        logger.debug("Collector {} registered", collector.getClass().getName());
     }
 
     @Restricted(NoExternalUse.class)
-    private void cleanUpCollector() {
+    private synchronized void cleanUpCollector() {
         this.collectorRegistry.clear();
     }
 
