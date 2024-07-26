@@ -39,8 +39,6 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
         CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
         DefaultExports.initialize();
         this.collectorRegistry = collectorRegistry;
-        // Workaround for #683
-        this.collectorRegistry.clear();
         this.cachedMetrics = new AtomicReference<>("");
     }
 
@@ -55,6 +53,19 @@ public class DefaultPrometheusMetrics implements PrometheusMetrics {
     private void registerCollector(@NonNull Collector collector) {
         collectorRegistry.register(collector);
         logger.debug(String.format("Collector %s registered", collector.getClass().getName()));
+    }
+
+    @Restricted(NoExternalUse.class)
+    private void cleanUpCollector() {
+        this.collectorRegistry.clear();
+    }
+
+    // Issue #683
+    @Restricted(NoExternalUse.class)
+    @Initializer(after = InitMilestone.PLUGINS_STARTED, before = InitMilestone.EXTENSIONS_AUGMENTED)
+    public static void cleanupCollectorRegistry() {
+        DefaultPrometheusMetrics instance = get();
+        instance.cleanUpCollector();
     }
 
     @Restricted(NoExternalUse.class)
