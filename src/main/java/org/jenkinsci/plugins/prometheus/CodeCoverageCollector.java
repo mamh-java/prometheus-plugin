@@ -1,11 +1,9 @@
 package org.jenkinsci.plugins.prometheus;
 
-import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.plugins.coverage.metrics.steps.CoverageBuildAction;
 import io.prometheus.client.Collector;
 import jenkins.model.Jenkins;
-import org.apache.commons.collections.CollectionUtils;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorFactory;
 import org.jenkinsci.plugins.prometheus.collectors.CollectorType;
 import org.jenkinsci.plugins.prometheus.collectors.MetricCollector;
@@ -36,25 +34,12 @@ public class CodeCoverageCollector extends Collector {
             return Collections.emptyList();
         }
 
-        List<List<MetricFamilySamples>> samples = new ArrayList<>();
-        Jobs.forEachJob(job -> CollectionUtils.addIgnoreNull(samples, collectCoverageMetricForJob(job)));
+        List<MetricCollector<Run<?,?>, ? extends Collector>> collectors = createCollectors();
 
-
-        return samples.stream().flatMap(Collection::stream).collect(Collectors.toList());
+        return collectCoverageMetricForJob(collectors);
     }
 
-    private List<MetricFamilySamples> collectCoverageMetricForJob(Job<?,?> job) {
-
-        Run<?,?> lastBuild = job.getLastBuild();
-        if (lastBuild == null || lastBuild.isBuilding()) {
-            return Collections.emptyList();
-        }
-
-        CoverageBuildAction coverageBuildAction = lastBuild.getAction(CoverageBuildAction.class);
-        if (coverageBuildAction == null) {
-            return Collections.emptyList();
-        }
-
+    private List<MetricCollector<Run<?, ?>, ? extends Collector>> createCollectors() {
         CollectorFactory factory = new CollectorFactory();
         List<MetricCollector<Run<?,?>, ? extends Collector>> collectors = new ArrayList<>();
 
@@ -85,13 +70,31 @@ public class CodeCoverageCollector extends Collector {
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_LINE_TOTAL, new String[]{jobAttributeName}));
         collectors.add(factory.createCoverageRunCollector(CollectorType.COVERAGE_LINE_PERCENT, new String[]{jobAttributeName}));
 
-        collectors.forEach(c -> c.calculateMetric(lastBuild, new String[]{job.getFullName()}));
+        return collectors;
+    }
+
+    private List<MetricFamilySamples> collectCoverageMetricForJob(List<MetricCollector<Run<?, ?>, ? extends Collector>> collectors) {
+
+        Jobs.forEachJob(job -> {
+            Run<?,?> lastBuild = job.getLastBuild();
+            if (lastBuild == null || lastBuild.isBuilding()) {
+                return;
+            }
+
+            CoverageBuildAction coverageBuildAction = lastBuild.getAction(CoverageBuildAction.class);
+            if (coverageBuildAction == null) {
+                return;
+            }
+
+            collectors.forEach(c -> c.calculateMetric(lastBuild, new String[]{job.getFullName()}));
+        });
 
         return collectors.stream()
                 .map(MetricCollector::collect)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
+
     private boolean isCoveragePluginLoaded() {
         return Jenkins.get().getPlugin("coverage") != null;
     }

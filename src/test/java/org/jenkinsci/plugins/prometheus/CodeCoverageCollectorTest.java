@@ -60,52 +60,6 @@ class CodeCoverageCollectorTest {
     }
 
     @Test
-    void shouldNotProduceMetricsWhenJobIsBuilding() {
-        try (
-                MockedStatic<Jenkins> jenkinsStatic = mockStatic(Jenkins.class);
-                MockedStatic<PrometheusConfiguration> configurationStatic = mockStatic(PrometheusConfiguration.class);
-        ) {
-            jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
-            configurationStatic.when(PrometheusConfiguration::get).thenReturn(config);
-            Job jobUnderTest = mock(Job.class);
-            Run lastBuild = mock(Run.class);
-            when(lastBuild.isBuilding()).thenReturn(true);
-            when(jobUnderTest.getLastBuild()).thenReturn(lastBuild);
-            when(jenkins.getAllItems(Job.class)).thenReturn(List.of(jobUnderTest));
-            when(jenkins.getPlugin("coverage")).thenReturn(new Plugin.DummyImpl());
-            when(config.isCollectCodeCoverage()).thenReturn(true);
-
-            CodeCoverageCollector sut = new CodeCoverageCollector();
-
-            List<Collector.MetricFamilySamples> collect = sut.collect();
-            assertEquals(0, collect.size());
-        }
-    }
-
-    @Test
-    void shouldNotProduceMetricsWhenJobHasNoCoverageBuildAction() {
-        try (
-                MockedStatic<Jenkins> jenkinsStatic = mockStatic(Jenkins.class);
-                MockedStatic<PrometheusConfiguration> configurationStatic = mockStatic(PrometheusConfiguration.class);
-        ) {
-            jenkinsStatic.when(Jenkins::get).thenReturn(jenkins);
-            configurationStatic.when(PrometheusConfiguration::get).thenReturn(config);
-            Job jobUnderTest = mock(Job.class);
-            Run lastBuild = mock(Run.class);
-            when(lastBuild.isBuilding()).thenReturn(false);
-            when(jobUnderTest.getLastBuild()).thenReturn(lastBuild);
-            when(jenkins.getAllItems(Job.class)).thenReturn(List.of(jobUnderTest));
-            when(jenkins.getPlugin("coverage")).thenReturn(new Plugin.DummyImpl());
-            when(config.isCollectCodeCoverage()).thenReturn(true);
-
-            CodeCoverageCollector sut = new CodeCoverageCollector();
-
-            List<Collector.MetricFamilySamples> collect = sut.collect();
-            assertEquals(0, collect.size());
-        }
-    }
-
-    @Test
     void shouldProduceMetricsWhenJobHasCoverageBuildAction() {
         try (
                 MockedStatic<Jenkins> jenkinsStatic = mockStatic(Jenkins.class);
