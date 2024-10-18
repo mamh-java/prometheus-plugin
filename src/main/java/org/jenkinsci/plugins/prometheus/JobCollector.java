@@ -224,12 +224,24 @@ public class JobCollector extends Collector {
         boolean isPerBuildMetrics = PrometheusConfiguration.get().isPerBuildMetrics();
         String[] baseLabelValueArray = JobLabel.getBaseLabelValues(job);
 
-        Run<?, ?> lastBuild = job.getLastBuild();
+        Run<?, ?> buildToCheck = job.getLastBuild();
+
         // Never built
-        if (null == lastBuild) {
+        if (null == buildToCheck) {
             LOGGER.debug("job [{}] never built", job.getFullName());
             return;
         }
+
+        if (buildToCheck.isBuilding()) {
+            LOGGER.debug("Build [{}] is currently building. Will calculate previous build.", buildToCheck.number);
+            buildToCheck = buildToCheck.getPreviousBuild();
+            if (buildToCheck == null) {
+                LOGGER.debug("Previous build does not exist. Skipping calculation for [{}].", job.getFullName());
+                return;
+            }
+        }
+
+        LOGGER.debug("Calculating job metrics for [{}]", buildToCheck.number);
 
         nbBuildsGauge.calculateMetric(job, baseLabelValueArray);
         jobHealthScoreGauge.calculateMetric(job, baseLabelValueArray);
@@ -237,9 +249,9 @@ public class JobCollector extends Collector {
         currentRunDurationGauge.calculateMetric(job, baseLabelValueArray);
         logUpdatedGauge.calculateMetric(job, baseLabelValueArray);
 
-        processRun(job, lastBuild, baseLabelValueArray, lastBuildMetrics);
+        processRun(job, buildToCheck, baseLabelValueArray, lastBuildMetrics);
 
-        Run<?, ?> run = lastBuild;
+        Run<?, ?> run = buildToCheck;
         while (run != null) {
             LOGGER.debug("getting metrics for run [{}] from job [{}], include per run metrics [{}]", run.getNumber(), job.getName(), isPerBuildMetrics);
             if (Runs.includeBuildInMetrics(run)) {
@@ -265,7 +277,7 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildResult.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildStartMillis.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildDuration.calculateMetric(run, buildLabelValueArray);
-        // Label values are calculated within stageSummary so we pass null here.
+        // Label values are calculated within stageSummary, so we pass null here.
         buildMetrics.stageSummary.calculateMetric(run, buildLabelValueArray);
         buildMetrics.stageBuildResultOrdinal.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildTestsTotal.calculateMetric(run, buildLabelValueArray);
