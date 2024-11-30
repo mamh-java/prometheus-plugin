@@ -6,15 +6,19 @@ import net.sf.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 @SuppressWarnings("rawtypes")
 public class PrometheusConfigurationTest {
@@ -34,7 +38,7 @@ public class PrometheusConfigurationTest {
     @MethodSource("wrongMetricCollectorPeriodsProvider")
     public void shouldGetErrorWhenNotPositiveNumber(String metricCollectorPeriod) throws Descriptor.FormException {
         //given
-        Mockito.when(configuration.configure(any(), any())).thenCallRealMethod();
+        Mockito.when(configuration.configure(any(StaplerRequest2.class), any())).thenCallRealMethod();
         Mockito.when(configuration.doCheckCollectingMetricsPeriodInSeconds(any())).thenCallRealMethod();
         JSONObject config = getDefaultConfig();
         config.accumulate("collectingMetricsPeriodInSeconds", metricCollectorPeriod);
@@ -55,9 +59,10 @@ public class PrometheusConfigurationTest {
     @MethodSource("correctMetricCollectorPeriodsProvider")
     public void shouldReturnOk(String metricCollectorPeriod) throws Descriptor.FormException {
         //given
-        Mockito.when(configuration.configure(any(), any())).thenCallRealMethod();
+        Mockito.when(configuration.configure(any(StaplerRequest2.class), any())).thenCallRealMethod();
+        Mockito.when(configuration.doCheckCollectingMetricsPeriodInSeconds(any())).thenCallRealMethod();
         JSONObject config = getDefaultConfig();
-        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        StaplerRequest2 request = Mockito.mock(StaplerRequest2.class);
         Mockito.doNothing().when(request).bindJSON(any(Object.class), any(JSONObject.class));
         config.accumulate("collectingMetricsPeriodInSeconds", metricCollectorPeriod);
 

@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus.config;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.YesNoMaybe;
@@ -10,11 +11,10 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.disabledmetrics.DisabledMetricConfig;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +80,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     }
 
     @Override
-    public boolean configure(StaplerRequest req, JSONObject json) {
+    public boolean configure(StaplerRequest2 req, JSONObject json) {
         disabledMetricConfig = null;
         req.bindJSON(this, json);
         save();

@@ -11,7 +11,9 @@ import org.jenkinsci.plugins.prometheus.collectors.NoOpMetricCollector;
 import java.nio.file.FileStore;
 import java.util.Objects;
 
-import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.*;
+import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.DISK_USAGE_BYTES_GAUGE;
+import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.DISK_USAGE_FILE_COUNT_GAUGE;
+import static org.jenkinsci.plugins.prometheus.collectors.CollectorType.JOB_USAGE_BYTES_GAUGE;
 
 public class DiskCollectorFactory extends BaseCollectorFactory {
 

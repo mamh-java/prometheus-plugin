@@ -10,8 +10,10 @@ import org.jenkinsci.plugins.prometheus.config.PrometheusConfiguration;
 import org.jenkinsci.plugins.prometheus.service.DefaultPrometheusMetrics;
 import org.jenkinsci.plugins.prometheus.service.PrometheusMetrics;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
+
+import java.io.IOException;
 
 @Extension
 public class PrometheusAction implements UnprotectedRootAction {
@@ -33,7 +35,7 @@ public class PrometheusAction implements UnprotectedRootAction {
         return PrometheusConfiguration.get().getUrlName();
     }
 
-    public HttpResponse doDynamic(StaplerRequest request) {
+    public HttpResponse doDynamic(StaplerRequest2 request) {
         if (request.getRestOfPath().equals(PrometheusConfiguration.get().getAdditionalPath())) {
             if (hasAccess()) {
                 return prometheusResponse();
@@ -50,12 +52,16 @@ public class PrometheusAction implements UnprotectedRootAction {
         return true;
     }
 
+
     private HttpResponse prometheusResponse() {
-        return (request, response, node) -> {
-            response.setStatus(StaplerResponse.SC_OK);
-            response.setContentType(TextFormat.CONTENT_TYPE_004);
-            response.addHeader("Cache-Control", "must-revalidate,no-cache,no-store");
-            response.getWriter().write(prometheusMetrics.getMetrics());
+        return new HttpResponse() {
+            @Override
+            public void generateResponse(StaplerRequest2 request, StaplerResponse2 response, Object node) throws IOException {
+                response.setStatus(StaplerResponse2.SC_OK);
+                response.setContentType(TextFormat.CONTENT_TYPE_004);
+                response.addHeader("Cache-Control", "must-revalidate,no-cache,no-store");
+                response.getWriter().write(prometheusMetrics.getMetrics());
+            }
         };
     }
 }
