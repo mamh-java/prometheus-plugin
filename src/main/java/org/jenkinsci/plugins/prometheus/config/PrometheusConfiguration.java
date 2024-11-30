@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.prometheus.config.disabledmetrics.DisabledMetricConfig;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +80,7 @@ public class PrometheusConfiguration extends GlobalConfiguration {
     }
 
     @Override
-    public boolean configure(StaplerRequest req, JSONObject json) {
+    public boolean configure(StaplerRequest2 req, JSONObject json) {
         disabledMetricConfig = null;
         req.bindJSON(this, json);
         save();

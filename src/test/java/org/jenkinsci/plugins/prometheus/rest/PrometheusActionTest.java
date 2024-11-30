@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.*;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -55,10 +53,10 @@ public class PrometheusActionTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenDoesNotMatchPath() throws IOException, ServletException {
+    public void shouldThrowExceptionWhenDoesNotMatchPath() throws IOException, ServletException, jakarta.servlet.ServletException {
         // given
         PrometheusAction action = new PrometheusAction();
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         String url = "";
         when(request.getRestOfPath()).thenReturn(url);
 
@@ -72,10 +70,10 @@ public class PrometheusActionTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenAuthenticationEnabledAndInsufficientPermission() throws IOException, ServletException {
+    public void shouldThrowExceptionWhenAuthenticationEnabledAndInsufficientPermission() throws IOException, ServletException, jakarta.servlet.ServletException {
         // given
         PrometheusAction action = new PrometheusAction();
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         String url = "prometheus";
         when(request.getRestOfPath()).thenReturn(url);
         when(configuration.isUseAuthenticatedEndpoint()).thenReturn(true);
@@ -91,7 +89,7 @@ public class PrometheusActionTest {
     }
 
     @Test
-    public void shouldReturnMetrics() throws IOException, ServletException {
+    public void shouldReturnMetrics() throws IOException, jakarta.servlet.ServletException {
         // given
         DefaultPrometheusMetrics prometheusMetrics = mock(DefaultPrometheusMetrics.class);
         String responseBody = "testMetric";
@@ -99,7 +97,7 @@ public class PrometheusActionTest {
         try (MockedStatic<DefaultPrometheusMetrics> defaultPrometheusMetricsMockedStatic = mockStatic(DefaultPrometheusMetrics.class)) {
             defaultPrometheusMetricsMockedStatic.when(DefaultPrometheusMetrics::get).thenReturn(prometheusMetrics);
             PrometheusAction action = new PrometheusAction();
-            StaplerRequest request = mock(StaplerRequest.class);
+            StaplerRequest2 request = mock(StaplerRequest2.class);
             String url = "prometheus";
             when(request.getRestOfPath()).thenReturn(url);
 
@@ -117,14 +115,14 @@ public class PrometheusActionTest {
     }
 
     private static class AssertStaplerResponse {
-        private final StaplerResponse response;
+        private final StaplerResponse2 response;
         private final HttpResponse httpResponse;
         private final StringWriter stringWriter;
 
 
         private AssertStaplerResponse(HttpResponse httpResponse) throws IOException {
             this.httpResponse = httpResponse;
-            this.response = mock(StaplerResponse.class);
+            this.response = mock(StaplerResponse2.class);
             stringWriter = new StringWriter();
             PrintWriter writer = new PrintWriter(stringWriter);
 
@@ -155,7 +153,7 @@ public class PrometheusActionTest {
             return this;
         }
 
-        private AssertStaplerResponse call() throws IOException, ServletException {
+        private AssertStaplerResponse call() throws IOException, jakarta.servlet.ServletException {
             httpResponse.generateResponse(null, response, null);
             return this;
         }
