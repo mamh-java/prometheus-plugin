@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.prometheus.collectors.disk;
 
-import com.cloudbees.simplediskusage.DiskItem;
 import com.cloudbees.simplediskusage.JobDiskItem;
 import io.prometheus.client.Collector;
 import org.jenkinsci.plugins.prometheus.collectors.testutils.CollectorTest;

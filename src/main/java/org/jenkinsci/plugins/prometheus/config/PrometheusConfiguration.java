@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.prometheus.config;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.YesNoMaybe;
@@ -14,7 +15,6 @@ import org.kohsuke.stapler.StaplerRequest2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

@@ -9,7 +9,9 @@ import org.mockito.MockedStatic;
 
 import java.util.Arrays;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 public class CounterManagerTest extends MockedRunCollectorTest {
     private final CounterManager manager;
