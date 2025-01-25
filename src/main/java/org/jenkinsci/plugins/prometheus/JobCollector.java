@@ -157,16 +157,20 @@ public class JobCollector extends Collector {
 
         Jobs.forEachJob(job -> {
             try {
-                if (!job.isBuildable() && processDisabledJobs) {
-                    LOGGER.debug("job [{}] is disabled", job.getFullName());
-                    return;
+                if (job.isBuildable()) {
+                    if (!MetricStatusChecker.isJobEnabled(job.getFullName())) {
+                        LOGGER.debug("Job [{}] is excluded by configuration", job.getFullName());
+                        return;
+                    }
+                    LOGGER.debug("Collecting metrics for job [{}]", job.getFullName());
+                    appendJobMetrics(job);
+                } else {
+                    if (processDisabledJobs) {
+                        appendJobMetrics(job);
+                    } else {
+                        LOGGER.debug("job [{}] is disabled", job.getFullName());
+                    }
                 }
-                if (!MetricStatusChecker.isJobEnabled(job.getFullName())) {
-                    LOGGER.debug("Job [{}] is excluded by configuration", job.getFullName());
-                    return;
-                }
-                LOGGER.debug("Collecting metrics for job [{}]", job.getFullName());
-                appendJobMetrics(job);
             } catch (IllegalArgumentException e) {
                 if (!e.getMessage().contains("Incorrect number of labels")) {
                     LOGGER.warn("Caught error when processing job [{}] error: ", job.getFullName(), e);
