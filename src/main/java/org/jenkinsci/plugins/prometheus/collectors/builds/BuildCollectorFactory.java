@@ -45,6 +45,8 @@ public class BuildCollectorFactory extends BaseCollectorFactory {
                 return saveBuildCollector(new BuildTotalCounter(labelNames, namespace, subsystem, prefix));
             case BUILD_LOGFILE_SIZE_GAUGE:
                 return saveBuildCollector(new BuildLogFileSizeGauge(labelNames, namespace, subsystem, prefix));
+            case BUILD_WAITING_GAUGE:
+                return saveBuildCollector(new BuildWaitingDurationGauge(labelNames, namespace, subsystem, prefix));
             default:
                 return new NoOpMetricCollector<>();
         }
