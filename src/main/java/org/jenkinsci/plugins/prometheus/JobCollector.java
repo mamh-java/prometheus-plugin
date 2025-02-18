@@ -49,6 +49,7 @@ public class JobCollector extends Collector {
         public MetricCollector<Run<?, ?>, ? extends Collector> jobBuildTestsFailing;
         public MetricCollector<Run<?,?>, ? extends Collector> jobBuildLikelyStuck;
         private MetricCollector<Run<?, ?>, ? extends Collector> buildLogFileSizeGauge;
+        private MetricCollector<Run<?, ?>, ? extends Collector> jobBuildWaitingDurationGauge;
 
         private final String buildPrefix;
 
@@ -69,6 +70,7 @@ public class JobCollector extends Collector {
             this.stageBuildResultOrdinal = factory.createRunCollector(CollectorType.STAGE_BUILDRESULT_ORDINAL, ArrayUtils.add(labelNameArray, "stage"), buildPrefix);
             this.jobBuildLikelyStuck = factory.createRunCollector(CollectorType.BUILD_LIKELY_STUCK_GAUGE, labelNameArray, buildPrefix);
             this.buildLogFileSizeGauge = factory.createRunCollector(CollectorType.BUILD_LOGFILE_SIZE_GAUGE, labelNameArray, buildPrefix);
+            this.jobBuildWaitingDurationGauge = factory.createRunCollector(CollectorType.BUILD_WAITING_GAUGE, labelNameArray, buildPrefix);
         }
     }
 
@@ -214,6 +216,7 @@ public class JobCollector extends Collector {
         addSamples(allSamples, buildMetrics.jobBuildResultOrdinal.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildResult.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildDuration.collect(), "Adding [{}] samples from gauge ({})");
+        addSamples(allSamples, buildMetrics.jobBuildWaitingDurationGauge.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildStartMillis.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildTestsTotal.collect(), "Adding [{}] samples from gauge ({})");
         addSamples(allSamples, buildMetrics.jobBuildTestsSkipped.collect(), "Adding [{}] samples from gauge ({})");
@@ -289,6 +292,7 @@ public class JobCollector extends Collector {
         buildMetrics.jobBuildTestsFailing.calculateMetric(run, buildLabelValueArray);
         buildMetrics.jobBuildLikelyStuck.calculateMetric(run,buildLabelValueArray);
         buildMetrics.buildLogFileSizeGauge.calculateMetric(run, buildLabelValueArray);
+        buildMetrics.jobBuildWaitingDurationGauge.calculateMetric(run, buildLabelValueArray);
     }
 
 }
