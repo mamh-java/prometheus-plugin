@@ -24,6 +24,11 @@ public class JenkinsCollectorFactory extends BaseCollectorFactory {
                     return new NoOpMetricCollector<>();
                 }
                 return saveBuildCollector(new NodesOnlineGauge(labelNames, namespace, subsystem));
+            case NODES_OFFLINE_CAUSE_GAUGE:
+                if (!isNodeOnlineGaugeEnabled()) {
+                    return new NoOpMetricCollector<>();
+                }
+                return saveBuildCollector(new NodesOfflineCauseGauge(labelNames, namespace, subsystem));
             case JENKINS_UPTIME_GAUGE:
                 return saveBuildCollector(new JenkinsUptimeGauge(labelNames, namespace, subsystem));
             case JENKINS_VERSION_INFO_GAUGE:
