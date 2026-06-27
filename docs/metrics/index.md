@@ -34,13 +34,14 @@ Required Plugin:
 
 ## JenkinsStatusCollector
 
-| metric                       | description                                | Prometheus Type |
-|------------------------------|--------------------------------------------|-----------------|
-| default_jenkins_version      | Shows the jenkins Version                  | info            |
-| default_jenkins_up           | Shows if jenkins ready to receive requests | gauge           |
-| default_jenkins_uptime       | Shows time since Jenkins was initialized   | gauge           |
-| default_jenkins_nodes_online | Shows Nodes online status                  | gauge           |
-| default_jenkins_quietdown    | Shows if jenkins is in quiet mode          | gauge           |
+| metric                              | description                                | Prometheus Type |
+|-------------------------------------|--------------------------------------------|-----------------|
+| default_jenkins_version             | Shows the jenkins Version                  | info            |
+| default_jenkins_up                  | Shows if jenkins ready to receive requests | gauge           |
+| default_jenkins_uptime              | Shows time since Jenkins was initialized   | gauge           |
+| default_jenkins_nodes_online        | Shows Nodes online status                  | gauge           |
+| default_jenkins_nodes_offline_cause | Shows the offline cause per offline node   | gauge           |
+| default_jenkins_quietdown           | Shows if jenkins is in quiet mode          | gauge           |
 
 ## JobCollector
 
